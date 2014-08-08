@@ -16,6 +16,7 @@ import reflang.AST.VarExp;
 import reflang.AST.Visitor;
 import reflang.Env.EmptyEnv;
 import reflang.Env.ExtendEnv;
+import reflang.Env.ExtendEnvRec;
 import reflang.Store.Store32Bit;
 
 public class Evaluator implements Visitor<Value> {
@@ -139,12 +140,8 @@ public class Evaluator implements Visitor<Value> {
 		
 		for(Exp exp : fun_exps) 
 			funs.add((Value.Fun)exp.accept(this, env));
-		
-		//TODO: Implement Extend-env Recursively.
-		Env new_env = env;
-		for (int index = 0; index < names.size(); index++)
-			new_env = new ExtendEnv(new_env, names.get(index), funs.get(index));
 
+		Env new_env = new ExtendEnvRec(env, names, funs);
 		return (Value) e.body().accept(this, new_env);		
 	}	
 
