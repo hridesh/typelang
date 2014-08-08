@@ -25,7 +25,7 @@ public class Evaluator implements Visitor<Value> {
 	
 	Store store = Store32Bit.get();
 	
-	Value valueOf(Program p) {
+	public Value valueOf(Program p) {
 		Env env = new EmptyEnv();
 		// Value of a program in this language is the value of the expression
 		return (Value) this.visit(p, env);

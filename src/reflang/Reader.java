@@ -36,7 +36,7 @@ public class Reader {
 
 	private static final boolean DEBUG = false;
 	
-	Program read() throws IOException {
+	public Program read() throws IOException {
 		String programText = readNextProgram();
 		Program program = parse(programText);
 		return program;
@@ -122,7 +122,7 @@ public class Reader {
 	 * @author hridesh
 	 * 
 	 */
-	class TreeToExpConverter implements ParseTreeVisitor<AST.Exp> {
+	public class TreeToExpConverter implements ParseTreeVisitor<AST.Exp> {
 
 		ParserInterpreter parser;
 
