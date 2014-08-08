@@ -28,7 +28,7 @@ public class Evaluator implements Visitor<Value> {
 	Value valueOf(Program p) {
 		Env env = new EmptyEnv();
 		// Value of a program in this language is the value of the expression
-		return (Value) p.accept(this, env);
+		return (Value) this.visit(p, env);
 	}
 	
 	@Override
