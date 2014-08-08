@@ -12,8 +12,8 @@ import reflang.AST.*;
  */
 public class Interpreter {
 	public static void main(String[] args) {
-		System.out.println("Type a program to evaluate and press the enter key," + 
-							" e.g. (let ((class (ref 0))) (let ((res (set! class 342))) (deref class))) \n" + 
+		System.out.println("Type a program to evaluate and press the enter key,\n" + 
+							"e.g. (let ((class (ref 0))) (let ((res (set! class 342))) (deref class))) \n" + 
 							"Press Ctrl + C to exit.");
 		Reader reader = new Reader();
 		Evaluator eval = new Evaluator();
