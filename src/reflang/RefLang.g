@@ -14,9 +14,13 @@ grammar VarLang;
         | multexp 
         | divexp
         | letexp
-        | lambdaexp
-        | callexp
-        | letrecexp
+        | lambdaexp //New for funclang
+        | callexp //New for funclang
+        | ifexp //New for funclang
+        | lessexp //New for funclang
+        | equalexp //New for funclang
+        | greaterexp //New for funclang
+        | letrecexp //New for reclang
         | refexp
         | derefexp
         | assignexp
@@ -78,6 +82,35 @@ grammar VarLang;
  			')' 
  		;
 
+ ifexp :
+ 		'(' If 
+ 		    exp 
+ 			exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ lessexp :
+ 		'(' Less 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ equalexp :
+ 		'(' Equal 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ greaterexp :
+ 		'(' Greater 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
  letrecexp  :
  		'(' Letrec 
  			'(' ( '(' Identifier exp ')' )+  ')'
@@ -108,6 +141,10 @@ grammar VarLang;
 
  Let : 'let' ;
  Lambda : 'lambda' ;
+ If : 'if' ; 
+ Less : '<' ;
+ Equal : '==' ;
+ Greater : '>' ;
  Letrec : 'letrec' ;
  Ref : 'ref' ; 
  Deref : 'deref' ;

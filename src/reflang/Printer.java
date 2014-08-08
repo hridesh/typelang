@@ -89,7 +89,36 @@ public class Printer {
 				result += exp.accept(this, env) + " ";
 			return result + ")";
 		}
+				
+		public String visit(AST.IfExp e, Env env) {
+			String result = "(if ";
+			result += e.conditional().accept(this, env) + " ";
+			result += e.then_exp().accept(this, env) + " ";
+			result += e.then_exp().accept(this, env);
+			return result + ")";
+		}
 		
+		public String visit(AST.LessExp e, Env env) {
+			String result = "(< ";
+			result += e.first_exp().accept(this, env) + " ";
+			result += e.second_exp().accept(this, env);
+			return result + ")";
+		}
+
+		public String visit(AST.EqualExp e, Env env) {
+			String result = "(== ";
+			result += e.first_exp().accept(this, env) + " ";
+			result += e.second_exp().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.GreaterExp e, Env env) {
+			String result = "(> ";
+			result += e.first_exp().accept(this, env) + " ";
+			result += e.second_exp().accept(this, env);
+			return result + ")";
+		}
+
 		public String visit(AST.LetrecExp e, Env env) {
 			String result = "(letrec (";
 			List<String> names = e.names();
