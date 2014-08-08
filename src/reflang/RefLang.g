@@ -1,4 +1,4 @@
-grammar VarLang;
+grammar RefLang;
  
  // Grammar of this Programming Language
  //  - grammar rules start with lowercase
@@ -21,9 +21,9 @@ grammar VarLang;
         | equalexp //New for funclang
         | greaterexp //New for funclang
         | letrecexp //New for reclang
-        | refexp
-        | derefexp
-        | assignexp
+        | refexp //New for reflang
+        | derefexp //New for reflang
+        | assignexp //New for reflang
         ;
  
  varexp  : 
