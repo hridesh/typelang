@@ -13,9 +13,9 @@ public interface Value {
 	    }
 	}
 	static class Fun implements Value { //New in the funclang
-		Env _env;
-		List<String> _formals;
-		Exp _body;
+		private Env _env;
+		private List<String> _formals;
+		private Exp _body;
 		public Fun(Env env, List<String> formals, Exp body) {
 			_env = env;
 			_formals = formals;
@@ -34,13 +34,13 @@ public interface Value {
 	    }
 	}
 	static class Int implements Value {
-	    int _val;
+		private int _val;
 	    public Int(int v) { _val = v; } 
 	    public int v() { return _val; }
 	    public String toString() { return "" + _val; }
 	}
 	static class Bool implements Value {
-	    boolean _val;
+		private boolean _val;
 	    public Bool(boolean v) { _val = v; } 
 	    public boolean v() { return _val; }
 	    public String toString() { return "" + _val; }
