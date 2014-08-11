@@ -152,7 +152,7 @@ grammar RefLang;
  Lambda : 'lambda' ;
  If : 'if' ; 
  Less : '<' ;
- Equal : '==' ;
+ Equal : '=' ;
  Greater : '>' ;
  Letrec : 'letrec' ;
  Ref : 'ref' ; 
