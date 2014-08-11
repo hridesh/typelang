@@ -14,6 +14,7 @@ grammar RefLang;
         | multexp 
         | divexp
         | letexp
+        | defineexp //New for definelang
         | lambdaexp //New for funclang
         | callexp //New for funclang
         | ifexp //New for funclang
@@ -66,6 +67,13 @@ grammar RefLang;
  		'(' Let 
  			'(' ( '(' Identifier exp ')' )+  ')'
  			exp 
+ 			')' 
+ 		;
+
+ defineexp  :
+ 		'(' Define 
+ 			Identifier
+ 			exp
  			')' 
  		;
 
@@ -140,6 +148,7 @@ grammar RefLang;
 // Keywords
 
  Let : 'let' ;
+ Define : 'define' ;
  Lambda : 'lambda' ;
  If : 'if' ; 
  Less : '<' ;
