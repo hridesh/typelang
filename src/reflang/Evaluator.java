@@ -10,7 +10,7 @@ import reflang.Store.Store32Bit;
 
 public class Evaluator implements Visitor<Value> {
 	
-	Printer.ExpToStringConverter ts = new Printer.ExpToStringConverter();
+	Printer.Formatter ts = new Printer.Formatter();
 	
 	final GlobalEnv global_env = new GlobalEnv(); //New for definelang
 
