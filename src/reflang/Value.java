@@ -5,18 +5,18 @@ import java.util.List;
 import reflang.AST.Exp;
 
 public interface Value {
-	public String toString();
-	static class Loc implements Value { //New in the reflang
-	    public Loc() {}
-	    public String toString() {
-	    	return "loc:" + this.hashCode();
-	    }
-	}
-	static class Fun implements Value { //New in the funclang
+	public String tostring();
+    static class Loc implements Value { //New in the reflang
+        public Loc() {}
+        public String tostring() {
+            return "loc:" + this.hashCode();
+        }
+    }
+	static class FunVal implements Value { //New in the funclang
 		private Env _env;
 		private List<String> _formals;
 		private Exp _body;
-		public Fun(Env env, List<String> formals, Exp body) {
+		public FunVal(Env env, List<String> formals, Exp body) {
 			_env = env;
 			_formals = formals;
 			_body = body;
@@ -24,7 +24,7 @@ public interface Value {
 		public Env env() { return _env; }
 		public List<String> formals() { return _formals; }
 		public Exp body() { return _body; }
-	    public String toString() { 
+	    public String tostring() { 
 			String result = "(lambda ( ";
 			for(String formal : _formals) 
 				result += formal + " ";
@@ -33,26 +33,80 @@ public interface Value {
 			return result + ")";
 	    }
 	}
-	static class Int implements Value {
-		private int _val;
-	    public Int(int v) { _val = v; } 
-	    public int v() { return _val; }
-	    public String toString() { return "" + _val; }
+	static class NumVal implements Value {
+	    private double _val;
+	    public NumVal(double v) { _val = v; } 
+	    public double v() { return _val; }
+	    public String tostring() { 
+	    	int tmp = (int) _val;
+	    	if(tmp == _val) return "" + tmp;
+	    	return "" + _val; 
+	    }
 	}
-	static class Bool implements Value {
+	static class BoolVal implements Value {
 		private boolean _val;
-	    public Bool(boolean v) { _val = v; } 
+	    public BoolVal(boolean v) { _val = v; } 
 	    public boolean v() { return _val; }
-	    public String toString() { return "" + _val; }
+	    public String tostring() { if(_val) return "#t"; return "#f"; }
 	}
-	static class Unit implements Value {
-		public static final Unit v = new Unit();
-	    public String toString() { return "unit"; }
+	static class StringVal implements Value {
+		private java.lang.String _val;
+	    public StringVal(String v) { _val = v; } 
+	    public String v() { return _val; }
+	    public java.lang.String tostring() { return "" + _val; }
+	}
+	static class PairVal implements Value {
+		protected Value _fst;
+		protected Value _snd;
+	    public PairVal(Value fst, Value snd) { _fst = fst; _snd = snd; } 
+		public Value fst() { return _fst; }
+		public Value snd() { return _snd; }
+	    public java.lang.String tostring() { 
+	    	return "(" + _fst.tostring() + " " + _snd.tostring() + ")"; 
+	    }
+	    protected java.lang.String tostringHelper() { 
+	    	String result = "";
+	    	if(_fst instanceof Value.PairVal && !(_fst instanceof Value.ExtendList))
+	    		result += ((Value.PairVal) _fst).tostringHelper();
+	    	else result += _fst.tostring();
+	    	if(!(_snd instanceof Value.EmptyList)){
+	    		result += " ";
+	    		if(_snd instanceof Value.PairVal && !(_snd instanceof Value.ExtendList))
+	    			result += ((Value.PairVal) _snd).tostringHelper();
+	    		else result += _snd.tostring();
+	    	}
+	    	return result;
+	    }
+	}
+	static interface ListVal extends Value {}
+	static class EmptyList implements ListVal {
+		public EmptyList() {}
+	    public String tostring() { return "()"; }
+	}
+	static class ExtendList extends PairVal implements ListVal {
+		public ExtendList(Value fst, Value snd) { super(fst, snd); }		
+	    public String tostring() {
+	    	String result = "(";
+	    	if(_fst instanceof Value.PairVal && !(_fst instanceof Value.ExtendList))
+	    		result += ((Value.PairVal) _fst).tostringHelper();
+	    	else result += _fst.tostring();
+	    	if(!(_snd instanceof Value.EmptyList)){
+	    		result += " ";
+	    		if(_snd instanceof Value.PairVal && !(_snd instanceof Value.ExtendList))
+	    			result += ((Value.PairVal) _snd).tostringHelper();
+	    		else result += _snd.tostring();
+	    	}
+	    	return result += ")";
+	    }
+	}
+	static class UnitVal implements Value {
+		public static final UnitVal v = new UnitVal();
+	    public String tostring() { return ""; }
 	}
 	static class DynamicError implements Value { 
-		String message = "Unknown dynamic error.";
+		private String message = "Unknown dynamic error.";
 		public DynamicError() { }
 		public DynamicError(String message) { this.message = message; }
-	    public String toString() { return "" + message; }
+	    public String tostring() { return "" + message; }
 	}
 }

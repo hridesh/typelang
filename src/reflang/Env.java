@@ -2,7 +2,7 @@ package reflang;
 
 import java.util.List;
 
-import reflang.Value.Fun;
+import reflang.Value.*;
 
 /**
  * Representation of an environment, which maps variables to values.
@@ -12,7 +12,7 @@ import reflang.Value.Fun;
  */
 public interface Env {
 	Value get (String search_var);
-	void define (String saved_var, Value saved_val); //New for definelang
+	boolean isEmpty();
 
 	@SuppressWarnings("serial")
 	static public class LookupException extends RuntimeException {
@@ -21,20 +21,11 @@ public interface Env {
 		}
 	}
 	
-	@SuppressWarnings("serial")
-	static public class IllegalDefineException extends RuntimeException {
-		IllegalDefineException(String message){
-			super(message);
-		}
-	}
-
 	static public class EmptyEnv implements Env {
 		public Value get (String search_var) {
 			throw new LookupException("No binding found for name: " + search_var);
 		}
-		public void define(String saved_var, Value saved_val) {
-			throw new IllegalDefineException("Defining global variable " + saved_var + " not permitted in this language.");
-		}
+		public boolean isEmpty() { return true; }
 	}
 	
 	static public class ExtendEnv implements Env {
@@ -51,59 +42,35 @@ public interface Env {
 				return _val;
 			return _saved_env.get(search_var);
 		}
-		public synchronized void define(String saved_var, Value saved_val) {
-			_saved_env.define(saved_var, saved_val);
-		}
+		public boolean isEmpty() { return false; }
+		public Env saved_env() { return _saved_env; }
+		public String var() { return _var; }
+		public Value val() { return _val; }
 	}
-	
-	static public class GlobalEnv implements Env { // New for definelang
-		private Env _saved_env; 
-		private List<Binding> _bindings; 
-		public GlobalEnv() {
-			_saved_env = new EmptyEnv();
-			_bindings = new java.util.ArrayList<Binding>();
-		}
-		public synchronized Value get (String search_var) {
-			for(Binding binding : _bindings) {
-				if (search_var.equals(binding._var))
-					return binding._val;
-			}
-			return _saved_env.get(search_var);
-		}
-		public synchronized void define(String saved_var, Value saved_val) {
-			_bindings.add( new Binding(saved_var, saved_val));
-		}
-		private class Binding {
-			String _var; 
-			Value _val;
-			Binding(String var, Value val) {
-				_var = var;
-				_val = val; 
-			}
-		}
-	}
-	
+
 	static public class ExtendEnvRec implements Env {
 		private Env _saved_env;
 		private List<String> _names;
-		private List<Value.Fun> _funs;
-		public ExtendEnvRec(Env saved_env, List<String> names, List<Value.Fun> funs){
+		private List<Value.FunVal> _funs;
+		public Env saved_env() { return _saved_env; }
+		public List<String> names() { return _names; }
+		public List<FunVal> vals() { return _funs; }
+		public ExtendEnvRec(Env saved_env, List<String> names, List<Value.FunVal> funs){
 			_saved_env = saved_env;
 			_names = names;
 			_funs = funs;
 		}
+		public boolean isEmpty() { return false; }
 		public Value get (String search_var) {
 			int size = _names.size();
 			for(int index = 0; index < size; index++) {
 				if (search_var.equals(_names.get(index))) {
-					Fun f = _funs.get(index);
-					return new Value.Fun(this, f.formals(), f.body());				
+					FunVal f = _funs.get(index);
+					return new Value.FunVal(this, f.formals(), f.body());				
 				}
 			}
 			return _saved_env.get(search_var);
 		}
-		public synchronized void define(String saved_var, Value saved_val) {
-			_saved_env.define(saved_var, saved_val);
-		}
 	}
+
 }

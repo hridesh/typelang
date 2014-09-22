@@ -6,10 +6,11 @@ import reflang.AST.Exp;
 
 public class Printer {
 	public void print(Value v) {
-		System.out.println(v.toString());
+		if(v.tostring() != "")
+			System.out.println(v.tostring());
 	}
 	public void print(Exception e) {
-		System.out.println(e.getMessage());
+		System.out.println(e.toString());
 	}
 	
 	public static class Formatter implements AST.Visitor<String> {
@@ -21,10 +22,23 @@ public class Printer {
 			return result + ")";
 		}
 		
+		public String visit(AST.Unit e, Env env) {
+			return "unit";
+		}
+
 		public String visit(AST.Const e, Env env) {
 			return "" + e.v();
 		}
 		
+		public String visit(AST.StrConst e, Env env) {
+			return e.v();
+		}
+		
+		public String visit(AST.BoolConst e, Env env) {
+			if(e.v()) return "#t";
+			return "#f";
+		}
+
 		public String visit(AST.DivExp e, Env env) {
 			String result = "(/ ";
 			for(AST.Exp exp : e.all()) 
@@ -36,6 +50,14 @@ public class Printer {
 			return e.toString();
 		}
 		
+		public String visit(AST.ReadExp e, Env env) {
+			return "(read " + e.file().accept(this, env) + ")";
+		}
+
+		public String visit(AST.EvalExp e, Env env) {
+			return "(eval " + e.code().accept(this, env) + ")";
+		}
+
 		public String visit(AST.MultExp e, Env env) {
 			String result = "(* ";
 			for(AST.Exp exp : e.all()) 
@@ -73,10 +95,10 @@ public class Printer {
 			return result + ")";
 		}
 		
-		public String visit(AST.DefineExp e, Env env) {
+		public String visit(AST.DefineDecl d, Env env) {
 			String result = "(define ";
-			result += e.name() + " ";
-			result += e.value_exp().accept(this, env);
+			result += d.name() + " ";
+			result += d.value_exp().accept(this, env);
 			return result + ")";
 		}
 		
@@ -96,12 +118,12 @@ public class Printer {
 				result += exp.accept(this, env) + " ";
 			return result + ")";
 		}
-				
+		
 		public String visit(AST.IfExp e, Env env) {
 			String result = "(if ";
 			result += e.conditional().accept(this, env) + " ";
 			result += e.then_exp().accept(this, env) + " ";
-			result += e.then_exp().accept(this, env);
+			result += e.else_exp().accept(this, env);
 			return result + ")";
 		}
 		
@@ -125,7 +147,39 @@ public class Printer {
 			result += e.second_exp().accept(this, env);
 			return result + ")";
 		}
+		
+		public String visit(AST.CarExp e, Env env) {
+			String result = "(car ";
+			result += e.arg().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.CdrExp e, Env env) {
+			String result = "(cdr ";
+			result += e.arg().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.ConsExp e, Env env) {
+			String result = "(cons ";
+			result += e.fst().accept(this, env) + " ";
+			result += e.snd().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.ListExp e, Env env) {
+			String result = "(list ";
+			for(AST.Exp exp : e.elems())
+				result += exp.accept(this, env) + " ";
+			return result + ")";
+		}
 
+		public String visit(AST.NullExp e, Env env) {
+			String result = "(null? ";
+			result += e.arg().accept(this, env);
+			return result + ")";
+		}
+		
 		public String visit(AST.LetrecExp e, Env env) {
 			String result = "(letrec (";
 			List<String> names = e.names();
@@ -141,23 +195,23 @@ public class Printer {
 			return result + ")";
 		}
 
-		public String visit(AST.RefExp e, Env env) {
-			String result = "(ref ";
-			result += e.value_exp().accept(this, env);
-			return result + ")";
-		}
+        public String visit(AST.RefExp e, Env env) {
+                String result = "(ref ";
+                result += e.value_exp().accept(this, env);
+                return result + ")";
+        }
 
-		public String visit(AST.DerefExp e, Env env) {
-			String result = "(deref ";
-			result += e.loc_exp().accept(this, env);
-			return result + ")";
-		}
+        public String visit(AST.DerefExp e, Env env) {
+                String result = "(deref ";
+                result += e.loc_exp().accept(this, env);
+                return result + ")";
+        }
 
-		public String visit(AST.AssignExp e, Env env) {
-			String result = "(set! ";
-			result += e.lhs_exp().accept(this, env) + " ";
-			result += e.rhs_exp().accept(this, env);
-			return result + ")";
-		}
+        public String visit(AST.AssignExp e, Env env) {
+                String result = "(set! ";
+                result += e.lhs_exp().accept(this, env) + " ";
+                result += e.rhs_exp().accept(this, env);
+                return result + ")";
+        }
 	}
 }

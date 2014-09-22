@@ -1,27 +1,40 @@
-grammar RefLang;
+grammar RecLang;
  
  // Grammar of this Programming Language
  //  - grammar rules start with lowercase
  program : 
-		exp
+		(definedecl)* (exp)? //Zero or more define declarations followed by an optional expression.
 		;
+
+ definedecl  :                
+ 		'(' Define 
+ 			Identifier
+ 			exp
+ 			')' 
+ 		;
 
  exp : 
 		varexp 
 		| numexp 
+		| strconst
+		| boolconst
         | addexp 
         | subexp 
         | multexp 
         | divexp
         | letexp
-        | defineexp //New for definelang
-        | lambdaexp //New for funclang
-        | callexp //New for funclang
-        | ifexp //New for funclang
-        | lessexp //New for funclang
-        | equalexp //New for funclang
-        | greaterexp //New for funclang
-        | letrecexp //New for reclang
+        | lambdaexp 
+        | callexp 
+        | ifexp 
+        | lessexp 
+        | equalexp 
+        | greaterexp 
+        | carexp 
+        | cdrexp 
+        | consexp
+        | listexp
+        | nullexp
+        | letrecexp
         | refexp //New for reflang
         | derefexp //New for reflang
         | assignexp //New for reflang
@@ -32,7 +45,17 @@ grammar RefLang;
  		;
  
  numexp :
- 		Number 
+ 		Number
+ 		| Number Dot Number
+ 		;
+
+ strconst :
+ 		StrLiteral
+ 		;
+
+ boolconst :
+ 		TrueLiteral
+ 		| FalseLiteral
  		;
   
  addexp :
@@ -45,7 +68,7 @@ grammar RefLang;
  subexp :  
  		'(' '-' 
  		    exp 
- 		    exp 
+ 		    (exp)+ 
  		    ')' 
  		;
 
@@ -59,7 +82,7 @@ grammar RefLang;
  divexp  : 
  		'(' '/' 
  		    exp 
- 		    exp 
+ 		    (exp)+ 
  		    ')' 
  		;
 
@@ -70,23 +93,16 @@ grammar RefLang;
  			')' 
  		;
 
- defineexp  :
- 		'(' Define 
- 			Identifier
- 			exp
- 			')' 
- 		;
-
  lambdaexp :
  		'(' Lambda 
- 			'(' Identifier+ ')'
+ 			'(' Identifier* ')'
  			exp 
  			')' 
  		;
 
  callexp :
  		'(' exp 
- 			exp+ 
+ 			exp* 
  			')' 
  		;
 
@@ -119,31 +135,63 @@ grammar RefLang;
  			')' 
  		;
 
+ carexp :
+ 		'(' Car 
+ 		    exp 
+ 			')' 
+ 		;
+
+ cdrexp :
+ 		'(' Cdr 
+ 		    exp 
+ 			')' 
+ 		;
+
+ consexp :
+ 		'(' Cons 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ listexp :
+ 		'(' List 
+ 		    exp* 
+ 			')' 
+ 		;
+
+ nullexp :
+ 		'(' Null 
+ 		    exp 
+ 			')' 
+ 		;
+
  letrecexp  :
  		'(' Letrec 
  			'(' ( '(' Identifier exp ')' )+  ')'
  			exp 
  			')' 
  		;
- 
- refexp  : 
- 		'(' Ref 
- 		    exp 
- 		    ')' 
- 		;
- 
- derefexp  : 
- 		'(' Deref 
- 		    exp 
- 		    ')' 
- 		;
- 
- assignexp  : 
- 		'(' Assign 
- 		    exp 
- 		    exp 
- 		    ')' 
- 		;
+
+// ******************* New Expressions for RefLang **********************
+ refexp  :
+                '(' Ref
+                    exp
+                    ')'
+                ;
+
+ derefexp  :
+                '(' Deref
+                    exp
+                    ')'
+                ;
+
+ assignexp  :
+                '(' Assign
+                    exp
+                    exp
+                    ')'
+                ;
 
 // Keywords
 
@@ -151,23 +199,29 @@ grammar RefLang;
  Define : 'define' ;
  Lambda : 'lambda' ;
  If : 'if' ; 
+ Car : 'car' ; 
+ Cdr : 'cdr' ; 
+ Cons : 'cons' ; 
+ List : 'list' ; 
+ Null : 'null?' ; 
+ Letrec : 'letrec' ;
  Less : '<' ;
  Equal : '=' ;
  Greater : '>' ;
- Letrec : 'letrec' ;
- Ref : 'ref' ; 
+ TrueLiteral : '#t' ;
+ FalseLiteral : '#f' ;
+ Dot : '.' ;
+ Ref : 'ref' ;
  Deref : 'deref' ;
- Assign : 'set!' ; 
-  
+ Assign : 'set!' ;
+ 
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase
 
  Identifier :   Letter LetterOrDigit*;
  	
- Number : 
-	DIGIT 
-	| (DIGIT_NOT_ZERO DIGIT+); 
-
+ Number : DIGIT+ ;
+ 
 // Identifier :   Letter LetterOrDigit*;
 
  Letter :   [a-zA-Z$_]
@@ -176,7 +230,7 @@ grammar RefLang;
 	|   [\uD800-\uDBFF] [\uDC00-\uDFFF] 
 		{Character.isJavaIdentifierStart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}? ;
 
- LetterOrDigit: [a-zA-Z0-9$_]
+ LetterOrDigit: [a-zA-Z0-9$_?]
 	|   ~[\u0000-\u00FF\uD800-\uDBFF] 
 		{Character.isJavaIdentifierPart(_input.LA(-1))}?
 	|    [\uD800-\uDBFF] [\uDC00-\uDFFF] 
@@ -184,6 +238,9 @@ grammar RefLang;
 
  fragment DIGIT: ('0'..'9');
  fragment DIGIT_NOT_ZERO: ('1'..'9');
+
+ fragment ESCQUOTE : '\\"';
+ StrLiteral :   '"' ( ESCQUOTE | ~('\n'|'\r') )*? '"';
 
  AT : '@';
  ELLIPSIS : '...';

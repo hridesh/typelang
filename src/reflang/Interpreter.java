@@ -12,12 +12,14 @@ import reflang.AST.*;
  */
 public class Interpreter {
 	public static void main(String[] args) {
-		System.out.println("Type a program to evaluate and press the enter key,\n" + 
-							"e.g. (let ((class (ref 0))) (let ((res (set! class 342))) (deref class))) \n" + 
-							"or try (letrec ((loop (lambda (x) (loop (ref x))))) (loop 0)) \n" + 
-							"Press Ctrl + C to exit.");
+		System.out.println("RefLang: Type a program to evaluate and press the enter key,\n" + 
+				"e.g. (ref 342) \n" + 
+				"or try (deref (ref 342)) \n" +
+				"or try (let ((class (ref 342))) (deref class)) \n" +
+				"or try (let ((class (ref 342))) (set! class 541)) \n" + 
+				"Press Ctrl + C to exit.");
 		Reader reader = new Reader();
-		Evaluator eval = new Evaluator();
+		Evaluator eval = new Evaluator(reader);
 		Printer printer = new Printer();
 		try {
 			while (true) { // Read-Eval-Print-Loop (also known as REPL)
@@ -26,8 +28,6 @@ public class Interpreter {
 					Value val = eval.valueOf(p);
 					printer.print(val);
 				} catch (Env.LookupException e) {
-					printer.print(e);
-				} catch (Store.StoreException e) {
 					printer.print(e);
 				}
 			}
