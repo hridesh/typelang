@@ -15,9 +15,10 @@ public class Evaluator implements Visitor<Value> {
 
 	Env initEnv = initialEnv(); //New for definelang
 	
-    Store store = Store32Bit.get(); //New for reflang
+    Store store = null; //New for reflang
 
     Value valueOf(Program p) {
+    	store = new Store32Bit();
 		return (Value) p.accept(this, initEnv);
 	}
 	

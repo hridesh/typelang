@@ -48,15 +48,7 @@ public interface Store {
 			return value;
 		}
 
-		public static synchronized Store get(){
-			if(_instance == null)
-				_instance = new Store32Bit();
-			return _instance;
-		}
-
-		private static Store _instance = null;
-
-		private Store32Bit(){}
+		public Store32Bit(){}
 	}
 
 }
