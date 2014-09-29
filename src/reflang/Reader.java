@@ -32,7 +32,7 @@ public class Reader {
 		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
 		carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22,
 		letrecexp = 23, // New expression for the letrec language.
-		refexp = 24, derefexp = 25, assignexp = 26 // New expression for the reflang language.
+		refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27 // New expression for the reflang language.
 		;
 
 	private static final boolean DEBUG = false;
@@ -170,9 +170,10 @@ public class Reader {
 				case listexp: return convertListExp(node);
 				case nullexp: return convertNullExp(node);
 				case letrecexp: return convertLetrecExp(node);
-                case refexp: return convertRefExp(node);
-                case derefexp: return convertDerefExp(node);
-                case assignexp: return convertAssignExp(node);
+                                case refexp: return convertRefExp(node);
+                                case derefexp: return convertDerefExp(node);
+                                case assignexp: return convertAssignExp(node);
+                                case freeexp: return convertFreeExp(node);
 				case exp: return visitChildrenHelper(node).get(0);
 				case program: 
 				default: 
@@ -460,38 +461,48 @@ public class Reader {
 			expect(node,index++, ")");
 			return new AST.LetrecExp(names,value_exps,body);
 		}
-
-        /**
-         *  Syntax: ( ref value_exp )
-         */
-        private AST.Exp convertRefExp(RuleNode node){
-                int index = expect(node,0,"(", "ref");
-                AST.Exp value_exp = node.getChild(index++).accept(this);
-                expect(node,index++, ")");
-                return new AST.RefExp(value_exp);
-        }
-
-        /**
-         *  Syntax: ( deref loc_exp )
-         */
-        private AST.Exp convertDerefExp(RuleNode node){
-                int index = expect(node,0,"(", "deref");
-                AST.Exp loc_exp = node.getChild(index++).accept(this);
-                expect(node,index++, ")");
-                return new AST.DerefExp(loc_exp);
-        }
-
-        /**
-         *  Syntax: ( set! lhs_exp rhs_exp )
-         */
-        private AST.Exp convertAssignExp(RuleNode node){
-                int index = expect(node,0,"(", "set!");
-                AST.Exp lhs_exp = node.getChild(index++).accept(this);
-                AST.Exp rhs_exp = node.getChild(index++).accept(this);
-                expect(node,index++, ")");
-                return new AST.AssignExp(lhs_exp, rhs_exp);
-        }
-
+        
+                /**
+                 *  Syntax: ( ref value_exp )
+                 */
+                private AST.Exp convertRefExp(RuleNode node){
+                        int index = expect(node,0,"(", "ref");
+                        AST.Exp value_exp = node.getChild(index++).accept(this);
+                        expect(node,index++, ")");
+                        return new AST.RefExp(value_exp);
+                }
+        
+                /**
+                 *  Syntax: ( deref loc_exp )
+                 */
+                private AST.Exp convertDerefExp(RuleNode node){
+                        int index = expect(node,0,"(", "deref");
+                        AST.Exp loc_exp = node.getChild(index++).accept(this);
+                        expect(node,index++, ")");
+                        return new AST.DerefExp(loc_exp);
+                }
+        
+                /**
+                 *  Syntax: ( set! lhs_exp rhs_exp )
+                 */
+                private AST.Exp convertAssignExp(RuleNode node){
+                        int index = expect(node,0,"(", "set!");
+                        AST.Exp lhs_exp = node.getChild(index++).accept(this);
+                        AST.Exp rhs_exp = node.getChild(index++).accept(this);
+                        expect(node,index++, ")");
+                        return new AST.AssignExp(lhs_exp, rhs_exp);
+                }
+                
+                /**
+                 *  Syntax: ( ref value_exp )
+                 */
+                private AST.Exp convertFreeExp(RuleNode node){
+                        int index = expect(node,0,"(", "free");
+                        AST.Exp value_exp = node.getChild(index++).accept(this);
+                        expect(node,index++, ")");
+                        return new AST.FreeExp(value_exp);
+                }
+        
 		public AST.Exp visitTerminal(TerminalNode node) {
 			String s = node.toStringTree(parser);
 			if (isConcreteSyntaxToken(s))

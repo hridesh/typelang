@@ -685,6 +685,29 @@ public interface AST {
             public Exp rhs_exp() { return _rhs_exp; }
 
     }
+
+    /**
+     * A free expression has the syntax 
+     * 
+     *  (free expression)
+     *  
+     * @author hridesh
+     *
+     */
+    public static class FreeExp extends Exp {
+            private Exp _value_exp;
+
+            public FreeExp(Exp value_exp) {
+                    _value_exp = value_exp;
+            }
+
+            public Object accept(Visitor visitor, Env env) {
+                    return visitor.visit(this, env);
+            }
+
+            public Exp value_exp() { return _value_exp; }
+
+    }
             
     public static class ErrorExp extends Exp {
 		public Object accept(Visitor visitor, Env env) {
@@ -721,8 +744,9 @@ public interface AST {
 		public T visit(AST.ConsExp e, Env env); // Additional expressions for convenience
 		public T visit(AST.ListExp e, Env env); // Additional expressions for convenience
 		public T visit(AST.NullExp e, Env env); // Additional expressions for convenience
-        public T visit(AST.RefExp e, Env env); // New for the Reflang
-        public T visit(AST.DerefExp e, Env env); // New for the Reflang
-        public T visit(AST.AssignExp e, Env env); // New for the Reflang
+		public T visit(AST.RefExp e, Env env); // New for the Reflang
+		public T visit(AST.DerefExp e, Env env); // New for the Reflang
+		public T visit(AST.AssignExp e, Env env); // New for the Reflang
+		public T visit(AST.FreeExp e, Env env); // New for the Reflang
 	}	
 }

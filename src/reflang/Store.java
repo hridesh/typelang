@@ -14,6 +14,8 @@ public interface Store {
 
 	Value setref (Value.Loc loc, Value value) throws StoreException;
 
+	Value.Loc free (Value.Loc value) throws StoreException;
+
 	@SuppressWarnings("serial")
 	static public class StoreException extends RuntimeException {
 
@@ -46,6 +48,13 @@ public interface Store {
 				throw new StoreException("Fatal Error: Segmentation fault at memory access " + loc);
 			_rep.put(loc, value);
 			return value;
+		}
+
+		public Value.Loc free (Value.Loc loc) {
+			if(!_rep.containsKey(loc))
+				throw new StoreException("Fatal Error: Segmentation fault at memory access " + loc);
+			_rep.remove(loc);
+			return loc;
 		}
 
 		public Store32Bit(){}

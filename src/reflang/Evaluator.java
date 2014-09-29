@@ -298,34 +298,41 @@ public class Evaluator implements Visitor<Value> {
 		Env new_env = new ExtendEnvRec(env, names, funs);
 		return (Value) e.body().accept(this, new_env);		
 	}	
-
-    @Override
-    public Value visit(RefExp e, Env env) { // New for reflang.
-            Exp value_exp = e.value_exp();
-            Value value = (Value) value_exp.accept(this, env);
-            Value.Loc new_loc = store.ref(value);
-            return new_loc;
-    }
-
-    @Override
-    public Value visit(DerefExp e, Env env) { // New for reflang.
-            Exp loc_exp = e.loc_exp();
-            Value.Loc loc = (Value.Loc) loc_exp.accept(this, env);
-            return store.deref(loc);
-    }
-
-    @Override
-    public Value visit(AssignExp e, Env env) { // New for reflang.
-            Exp rhs = e.rhs_exp();
-            Exp lhs = e.lhs_exp();
-            //Note the order of evaluation below.
-            Value rhs_val = (Value) rhs.accept(this, env);
-            Value.Loc loc = (Value.Loc) lhs.accept(this, env);
-            Value assign_val = store.setref(loc, rhs_val);
-            return assign_val;
-    }
-
-    private Env initialEnv() {
+    
+        @Override
+        public Value visit(RefExp e, Env env) { // New for reflang.
+                Exp value_exp = e.value_exp();
+                Value value = (Value) value_exp.accept(this, env);
+                Value.Loc new_loc = store.ref(value);
+                return new_loc;
+        }
+    
+        @Override
+        public Value visit(DerefExp e, Env env) { // New for reflang.
+                Exp loc_exp = e.loc_exp();
+                Value.Loc loc = (Value.Loc) loc_exp.accept(this, env);
+                return store.deref(loc);
+        }
+    
+        @Override
+        public Value visit(AssignExp e, Env env) { // New for reflang.
+                Exp rhs = e.rhs_exp();
+                Exp lhs = e.lhs_exp();
+                //Note the order of evaluation below.
+                Value rhs_val = (Value) rhs.accept(this, env);
+                Value.Loc loc = (Value.Loc) lhs.accept(this, env);
+                Value assign_val = store.setref(loc, rhs_val);
+                return assign_val;
+        }
+        
+        @Override
+        public Value visit(FreeExp e, Env env) { // New for reflang.
+                Exp value_exp = e.value_exp();
+                Value.Loc loc = (Value.Loc) value_exp.accept(this, env);
+                return store.free(loc);
+        }
+    
+        private Env initialEnv() {
 		Env initEnv = new EmptyEnv();
 		
 		/* Procedure: (read <filename>). Following is same as (define read (lambda (file) (read file))) */

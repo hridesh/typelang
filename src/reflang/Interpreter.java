@@ -17,6 +17,7 @@ public class Interpreter {
 				"or try (deref (ref 342)) \n" +
 				"or try (let ((class (ref 342))) (deref class)) \n" +
 				"or try (let ((class (ref 342))) (set! class 541)) \n" + 
+				"or try  (let ((r (ref 342))) (let ((d (free r))) (deref r))) \n" +
 				"Press Ctrl + C to exit.");
 		Reader reader = new Reader();
 		Evaluator eval = new Evaluator(reader);

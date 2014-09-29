@@ -38,6 +38,7 @@ grammar RecLang;
         | refexp //New for reflang
         | derefexp //New for reflang
         | assignexp //New for reflang
+        | freeexp //New for reflang
         ;
  
  varexp  : 
@@ -193,6 +194,12 @@ grammar RecLang;
                     ')'
                 ;
 
+ freeexp  :
+                '(' Free
+                    exp
+                    ')'
+                ;
+
 // Keywords
 
  Let : 'let' ;
@@ -214,6 +221,7 @@ grammar RecLang;
  Ref : 'ref' ;
  Deref : 'deref' ;
  Assign : 'set!' ;
+ Free : 'free' ;
  
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase
