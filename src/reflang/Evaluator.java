@@ -303,8 +303,7 @@ public class Evaluator implements Visitor<Value> {
         public Value visit(RefExp e, Env env) { // New for reflang.
                 Exp value_exp = e.value_exp();
                 Value value = (Value) value_exp.accept(this, env);
-                Value.RefVal new_loc = store.ref(value);
-                return new_loc;
+                return store.ref(value);
         }
     
         @Override
