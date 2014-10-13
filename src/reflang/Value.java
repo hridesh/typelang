@@ -6,8 +6,8 @@ import reflang.AST.Exp;
 
 public interface Value {
 	public String tostring();
-    static class Loc implements Value { //New in the reflang
-        public Loc() {}
+    static class RefVal implements Value { //New in the reflang
+        public RefVal() {}
         public String tostring() {
             return "loc:" + this.hashCode();
         }
