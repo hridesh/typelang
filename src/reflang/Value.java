@@ -7,10 +7,12 @@ import reflang.AST.Exp;
 public interface Value {
 	public String tostring();
     static class RefVal implements Value { //New in the reflang
-        public RefVal() {}
+    	private int _loc = -1; 
+        public RefVal(int loc) { _loc = loc; }
         public String tostring() {
-            return "loc:" + this.hashCode();
+            return "loc:" + this._loc;
         }
+        public int loc() { return _loc; }
     }
 	static class FunVal implements Value { //New in the funclang
 		private Env _env;

@@ -18,46 +18,53 @@ public interface Heap {
 
 	@SuppressWarnings("serial")
 	static public class HeapException extends RuntimeException {
-
 		HeapException(String message){
 			super(message);
 		}
-
 	}
 
-	static public class Heap32Bit implements Heap {
-
-		java.util.Hashtable<Value.RefVal, Value> _rep = new java.util.Hashtable<Value.RefVal, Value>();
-
+	static public class Heap16Bit implements Heap {
+		static final int HEAP_SIZE = 65_536;
+		
+		Value[] _rep = new Value[HEAP_SIZE];
+		int index = 0;
+		
 		public Value.RefVal ref (Value value) {
-			Value.RefVal new_loc = new Value.RefVal();
-			if(_rep.size() >= Integer.MAX_VALUE)
+			if(index >= HEAP_SIZE)
 				throw new HeapException("Fatal Error: Allowed memory size of " + Integer.MAX_VALUE + "exhausted.");
-			_rep.put(new_loc, value);
+			Value.RefVal new_loc = new Value.RefVal(index);
+			_rep[index] = value;
+			index++;
 			return new_loc;
 		}
 
 		public Value deref (Value.RefVal loc) {
-			if(!_rep.containsKey(loc))
+			try {
+				return _rep[loc.loc()];
+			} catch (ArrayIndexOutOfBoundsException e) {
 				throw new HeapException("Fatal Error: Segmentation fault at memory access " + loc);
-			return _rep.get(loc);
+			}
 		}
 
 		public Value setref (Value.RefVal loc, Value value) {
-			if(!_rep.containsKey(loc))
+			try {
+				return _rep[loc.loc()] = value;
+			} catch (ArrayIndexOutOfBoundsException e) {
 				throw new HeapException("Fatal Error: Segmentation fault at memory access " + loc);
-			_rep.put(loc, value);
-			return value;
+			}
 		}
 
 		public Value.RefVal free (Value.RefVal loc) {
-			if(!_rep.containsKey(loc))
+			try {
+				_rep[loc.loc()] = null;
+				//REMARK: students should add this location to free list.
+				return loc;
+			} catch (ArrayIndexOutOfBoundsException e) {
 				throw new HeapException("Fatal Error: Segmentation fault at memory access " + loc);
-			_rep.remove(loc);
-			return loc;
+			}
 		}
 
-		public Heap32Bit(){}
+		public Heap16Bit(){}
 	}
 
 }

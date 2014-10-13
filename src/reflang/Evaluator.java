@@ -18,7 +18,7 @@ public class Evaluator implements Visitor<Value> {
     Heap store = null; //New for reflang
 
     Value valueOf(Program p) {
-    	store = new Heap32Bit();
+    	store = new Heap16Bit();
 		return (Value) p.accept(this, initEnv);
 	}
 	
