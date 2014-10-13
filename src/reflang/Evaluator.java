@@ -329,7 +329,8 @@ public class Evaluator implements Visitor<Value> {
         public Value visit(FreeExp e, Env env) { // New for reflang.
                 Exp value_exp = e.value_exp();
                 Value.Loc loc = (Value.Loc) value_exp.accept(this, env);
-                return store.free(loc);
+                store.free(loc);
+                return new Value.UnitVal();
         }
     
         private Env initialEnv() {
