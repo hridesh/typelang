@@ -15,10 +15,10 @@ public class Evaluator implements Visitor<Value> {
 
 	Env initEnv = initialEnv(); //New for definelang
 	
-    Heap store = null; //New for reflang
+    Heap heap = null; //New for reflang
 
     Value valueOf(Program p) {
-    	store = new Heap16Bit();
+    	heap = new Heap16Bit();
 		return (Value) p.accept(this, initEnv);
 	}
 	
@@ -303,14 +303,14 @@ public class Evaluator implements Visitor<Value> {
         public Value visit(RefExp e, Env env) { // New for reflang.
                 Exp value_exp = e.value_exp();
                 Value value = (Value) value_exp.accept(this, env);
-                return store.ref(value);
+                return heap.ref(value);
         }
     
         @Override
         public Value visit(DerefExp e, Env env) { // New for reflang.
                 Exp loc_exp = e.loc_exp();
                 Value.RefVal loc = (Value.RefVal) loc_exp.accept(this, env);
-                return store.deref(loc);
+                return heap.deref(loc);
         }
     
         @Override
@@ -320,7 +320,7 @@ public class Evaluator implements Visitor<Value> {
                 //Note the order of evaluation below.
                 Value rhs_val = (Value) rhs.accept(this, env);
                 Value.RefVal loc = (Value.RefVal) lhs.accept(this, env);
-                Value assign_val = store.setref(loc, rhs_val);
+                Value assign_val = heap.setref(loc, rhs_val);
                 return assign_val;
         }
         
@@ -328,7 +328,7 @@ public class Evaluator implements Visitor<Value> {
         public Value visit(FreeExp e, Env env) { // New for reflang.
                 Exp value_exp = e.value_exp();
                 Value.RefVal loc = (Value.RefVal) value_exp.accept(this, env);
-                store.free(loc);
+                heap.free(loc);
                 return new Value.UnitVal();
         }
     

@@ -24,10 +24,9 @@ public interface Heap {
 		
 		public Value ref (Value value) {
 			if(index >= HEAP_SIZE)
-				return new Value.DynamicError("Fatal Error: Allowed memory size of " + Integer.MAX_VALUE + "exhausted.");
+				return new Value.DynamicError("Out of memory error");
 			Value.RefVal new_loc = new Value.RefVal(index);
-			_rep[index] = value;
-			index++;
+			_rep[index++] = value;
 			return new_loc;
 		}
 
@@ -35,7 +34,7 @@ public interface Heap {
 			try {
 				return _rep[loc.loc()];
 			} catch (ArrayIndexOutOfBoundsException e) {
-				return new Value.DynamicError("Fatal Error: Segmentation fault at memory access " + loc);
+				return new Value.DynamicError("Segmentation fault at access " + loc);
 			}
 		}
 
@@ -43,7 +42,7 @@ public interface Heap {
 			try {
 				return _rep[loc.loc()] = value;
 			} catch (ArrayIndexOutOfBoundsException e) {
-				return new Value.DynamicError("Fatal Error: Segmentation fault at memory access " + loc);
+				return new Value.DynamicError("Segmentation fault at access " + loc);
 			}
 		}
 
@@ -53,7 +52,7 @@ public interface Heap {
 				//REMARK: students should add this location to free list.
 				return loc;
 			} catch (ArrayIndexOutOfBoundsException e) {
-				return new Value.DynamicError("Fatal Error: Segmentation fault at memory access " + loc);
+				return new Value.DynamicError("Segmentation fault at access " + loc);
 			}
 		}
 
