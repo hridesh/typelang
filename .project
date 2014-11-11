@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>reflang</name>
-	<comment></comment>
+	<name>typelang</name>
+	<comment>Typelang: A Language with Types</comment>
 	<projects>
 	</projects>
 	<buildSpec>
