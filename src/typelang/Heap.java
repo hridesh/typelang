@@ -1,4 +1,4 @@
-package reflang;
+package typelang;
 
 /**
  * Representation of a heap, which maps references to values.

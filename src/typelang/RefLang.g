@@ -35,10 +35,10 @@ grammar RecLang;
         | listexp
         | nullexp
         | letrecexp
-        | refexp //New for reflang
-        | derefexp //New for reflang
-        | assignexp //New for reflang
-        | freeexp //New for reflang
+        | refexp //New for typelang
+        | derefexp //New for typelang
+        | assignexp //New for typelang
+        | freeexp //New for typelang
         ;
  
  varexp  : 

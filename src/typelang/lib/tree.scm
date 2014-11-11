@@ -49,7 +49,7 @@
 )
 
 /* An example usage
-$ (require "build/reflang/lib/tree.scm")
+$ (require "build/typelang/lib/tree.scm")
 $ (define atree (bintree 3 (leaf 4) (leaf 2)))
 $ (define op (lambda (x) x))
 $ (let ((atree (bintree 3 (leaf 4) (leaf 2)))) (traverse atree op combine))

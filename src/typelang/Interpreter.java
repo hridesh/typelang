@@ -1,7 +1,7 @@
-package reflang;
+package typelang;
 import java.io.IOException;
 
-import reflang.AST.*;
+import typelang.AST.*;
 
 /**
  * This main class implements the Read-Eval-Print-Loop of the interpreter with

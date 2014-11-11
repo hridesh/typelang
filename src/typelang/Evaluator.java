@@ -1,13 +1,13 @@
-package reflang;
-import static reflang.AST.*;
-import static reflang.Value.*;
-import static reflang.Heap.*;
+package typelang;
+import static typelang.AST.*;
+import static typelang.Heap.*;
+import static typelang.Value.*;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
 
-import reflang.Env.*;
+import typelang.Env.*;
 
 public class Evaluator implements Visitor<Value> {
 	
@@ -15,7 +15,7 @@ public class Evaluator implements Visitor<Value> {
 
 	Env initEnv = initialEnv(); //New for definelang
 	
-    Heap heap = null; //New for reflang
+    Heap heap = null; //New for typelang
 
     Value valueOf(Program p) {
     	heap = new Heap16Bit();
@@ -300,21 +300,21 @@ public class Evaluator implements Visitor<Value> {
 	}	
     
         @Override
-        public Value visit(RefExp e, Env env) { // New for reflang.
+        public Value visit(RefExp e, Env env) { // New for typelang.
                 Exp value_exp = e.value_exp();
                 Value value = (Value) value_exp.accept(this, env);
                 return heap.ref(value);
         }
     
         @Override
-        public Value visit(DerefExp e, Env env) { // New for reflang.
+        public Value visit(DerefExp e, Env env) { // New for typelang.
                 Exp loc_exp = e.loc_exp();
                 Value.RefVal loc = (Value.RefVal) loc_exp.accept(this, env);
                 return heap.deref(loc);
         }
     
         @Override
-        public Value visit(AssignExp e, Env env) { // New for reflang.
+        public Value visit(AssignExp e, Env env) { // New for typelang.
                 Exp rhs = e.rhs_exp();
                 Exp lhs = e.lhs_exp();
                 //Note the order of evaluation below.
@@ -325,7 +325,7 @@ public class Evaluator implements Visitor<Value> {
         }
         
         @Override
-        public Value visit(FreeExp e, Env env) { // New for reflang.
+        public Value visit(FreeExp e, Env env) { // New for typelang.
                 Exp value_exp = e.value_exp();
                 Value.RefVal loc = (Value.RefVal) value_exp.accept(this, env);
                 heap.free(loc);

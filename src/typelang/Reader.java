@@ -1,4 +1,4 @@
-package reflang;
+package typelang;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,11 +16,11 @@ import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.tool.Grammar;
 import org.antlr.v4.tool.LexerGrammar;
 
-import reflang.AST.*;
+import typelang.AST.*;
 
 public class Reader {
 	
-	private static String GRAMMAR_FILE = "build/reflang/RefLang.g";
+	private static String GRAMMAR_FILE = "build/typelang/RefLang.g";
 	//Following are ANTLR constants - Change them if you change the Grammar.
 	//Convention: New rules are always added at the end of the file. 
 	private static final String startRule = "program";
@@ -32,7 +32,7 @@ public class Reader {
 		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
 		carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22,
 		letrecexp = 23, // New expression for the letrec language.
-		refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27 // New expression for the reflang language.
+		refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27 // New expression for the typelang language.
 		;
 
 	private static final boolean DEBUG = false;

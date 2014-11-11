@@ -1,8 +1,8 @@
-package reflang;
+package typelang;
 
 import java.util.List;
 
-import reflang.AST.Exp;
+import typelang.AST.Exp;
 
 public class Printer {
 	public void print(Value v) {

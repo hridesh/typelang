@@ -1,12 +1,12 @@
-package reflang;
+package typelang;
 
 import java.util.List;
 
-import reflang.AST.Exp;
+import typelang.AST.Exp;
 
 public interface Value {
 	public String tostring();
-    static class RefVal implements Value { //New in the reflang
+    static class RefVal implements Value { //New in the typelang
     	private int _loc = -1; 
         public RefVal(int loc) { _loc = loc; }
         public String tostring() {

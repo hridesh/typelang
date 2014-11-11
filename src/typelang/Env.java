@@ -1,8 +1,8 @@
-package reflang;
+package typelang;
 
 import java.util.List;
 
-import reflang.Value.*;
+import typelang.Value.*;
 
 /**
  * Representation of an environment, which maps variables to values.
