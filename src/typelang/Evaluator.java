@@ -9,7 +9,7 @@ import java.io.File;
 
 import typelang.Env.*;
 
-public class Evaluator implements Visitor<Value> {
+public class Evaluator implements Visitor<Value,Env> {
 	
 	Printer.Formatter ts = new Printer.Formatter();
 

@@ -12,7 +12,7 @@ import typelang.AST.*;
  */
 public class Interpreter {
 	public static void main(String[] args) {
-		System.out.println("RefLang: Type a program to evaluate and press the enter key,\n" + 
+		System.out.println("TypeLang: Type a program to evaluate and press the enter key,\n" + 
 				"e.g. (ref 342) \n" + 
 				"or try (deref (ref 342)) \n" +
 				"or try (let ((class (ref 342))) (deref class)) \n" +
@@ -22,14 +22,20 @@ public class Interpreter {
 		Reader reader = new Reader();
 		Evaluator eval = new Evaluator(reader);
 		Printer printer = new Printer();
+		Checker checker = new Checker(); // Type checker
 		try {
 			while (true) { // Read-Eval-Print-Loop (also known as REPL)
 				Program p = reader.read();
-				try {
-					Value val = eval.valueOf(p);
-					printer.print(val);
-				} catch (Env.LookupException e) {
-					printer.print(e);
+				Type t = checker.check(p); // Type checking the program
+				if(t instanceof Type.ErrorT)
+					printer.print(t);
+				else {
+					try {
+						Value val = eval.valueOf(p);
+						printer.print(val);
+					} catch (Env.LookupException e) {
+						printer.print(e);
+					}
 				}
 			}
 		} catch (IOException e) {

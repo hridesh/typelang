@@ -3,9 +3,6 @@ package typelang;
 import java.util.ArrayList;
 import java.util.List;
 
-import typelang.Env;
-
-
 /**
  * This class hierarchy represents expressions in the abstract syntax tree
  * manipulated by this interpreter.
@@ -13,10 +10,10 @@ import typelang.Env;
  * @author hridesh
  * 
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"unchecked","rawtypes"})
 public interface AST {
 	public static abstract class ASTNode implements AST {
-		public abstract Object accept(Visitor visitor, Env env);
+		public abstract Object accept(Visitor visitor, Object env);
 	}
 	public static class Program extends ASTNode {
 		List<DefineDecl> _decls;
@@ -35,7 +32,7 @@ public interface AST {
 			return _decls;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -54,7 +51,7 @@ public interface AST {
 			return _name;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -63,7 +60,7 @@ public interface AST {
 		
 		public Unit() {}
 
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 
@@ -80,7 +77,7 @@ public interface AST {
 			return _val;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -96,7 +93,7 @@ public interface AST {
 			return _val;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -112,7 +109,7 @@ public interface AST {
 			return _val;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -182,7 +179,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -205,7 +202,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -227,7 +224,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -249,7 +246,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -273,7 +270,7 @@ public interface AST {
 			_body = body;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 		
@@ -302,7 +299,7 @@ public interface AST {
 			_value_exp = value_exp;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 		
@@ -331,7 +328,7 @@ public interface AST {
 		
 		public Exp body() { return _body; }
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -355,7 +352,7 @@ public interface AST {
 
 		public List<Exp> operands() { return _operands; }
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -383,7 +380,7 @@ public interface AST {
 		public Exp then_exp() { return _then_exp; }
 		public Exp else_exp() { return _else_exp; }
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -401,7 +398,7 @@ public interface AST {
 			super(first_exp, second_exp);
 		}
 				
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -430,7 +427,7 @@ public interface AST {
 			super(first_exp, second_exp);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -448,7 +445,7 @@ public interface AST {
 			super(first_exp, second_exp);
 		}
 				
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -467,7 +464,7 @@ public interface AST {
 			_arg = arg;
 		}
 		public Exp arg() { return _arg; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -486,7 +483,7 @@ public interface AST {
 			_arg = arg;
 		}
 		public Exp arg() { return _arg; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -508,7 +505,7 @@ public interface AST {
 		}
 		public Exp fst() { return _fst; }
 		public Exp snd() { return _snd; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -527,7 +524,7 @@ public interface AST {
 			_elems = elems;
 		}
 		public List<Exp> elems() { return _elems; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -546,7 +543,7 @@ public interface AST {
 			_arg = arg;
 		}
 		public Exp arg() { return _arg; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -562,7 +559,7 @@ public interface AST {
 			_code = code;
 		}
 		public Exp code() { return _code; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -578,7 +575,7 @@ public interface AST {
 			_file = file;
 		}
 		public Exp file() { return _file; }
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -602,7 +599,7 @@ public interface AST {
 			_body = body;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 		
@@ -629,7 +626,7 @@ public interface AST {
                     _value_exp = value_exp;
             }
 
-            public Object accept(Visitor visitor, Env env) {
+            public Object accept(Visitor visitor, Object env) {
                     return visitor.visit(this, env);
             }
 
@@ -652,7 +649,7 @@ public interface AST {
                     _loc_exp = loc_exp;
             }
 
-            public Object accept(Visitor visitor, Env env) {
+            public Object accept(Visitor visitor, Object env) {
                     return visitor.visit(this, env);
             }
 
@@ -677,7 +674,7 @@ public interface AST {
                     _rhs_exp = rhs_exp;
             }
 
-            public Object accept(Visitor visitor, Env env) {
+            public Object accept(Visitor visitor, Object env) {
                     return visitor.visit(this, env);
             }
 
@@ -701,7 +698,7 @@ public interface AST {
                     _value_exp = value_exp;
             }
 
-            public Object accept(Visitor visitor, Env env) {
+            public Object accept(Visitor visitor, Object env) {
                     return visitor.visit(this, env);
             }
 
@@ -710,43 +707,43 @@ public interface AST {
     }
             
     public static class ErrorExp extends Exp {
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
 	}
 	
-	public interface Visitor <T> {
+	public interface Visitor <T,U> {
 		// This interface should contain a signature for each concrete AST node.
-		public T visit(AST.AddExp e, Env env);
-		public T visit(AST.Unit e, Env env);
-		public T visit(AST.Const e, Env env);
-		public T visit(AST.StrConst e, Env env);
-		public T visit(AST.BoolConst e, Env env);
-		public T visit(AST.DivExp e, Env env);
-		public T visit(AST.ErrorExp e, Env env);
-		public T visit(AST.MultExp e, Env env);
-		public T visit(AST.Program p, Env env);
-		public T visit(AST.SubExp e, Env env);
-		public T visit(AST.VarExp e, Env env);
-		public T visit(AST.LetExp e, Env env); // New for the varlang
-		public T visit(AST.DefineDecl d, Env env); // New for the definelang
-		public T visit(AST.ReadExp e, Env env); // New for the funclang
-		public T visit(AST.EvalExp e, Env env); // New for the funclang
-		public T visit(AST.LambdaExp e, Env env); // New for the funclang
-		public T visit(AST.CallExp e, Env env); // New for the funclang
-		public T visit(AST.LetrecExp e, Env env); // New for the funclang
-		public T visit(AST.IfExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.LessExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.EqualExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.GreaterExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.CarExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.CdrExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.ConsExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.ListExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.NullExp e, Env env); // Additional expressions for convenience
-		public T visit(AST.RefExp e, Env env); // New for the Reflang
-		public T visit(AST.DerefExp e, Env env); // New for the Reflang
-		public T visit(AST.AssignExp e, Env env); // New for the Reflang
-		public T visit(AST.FreeExp e, Env env); // New for the Reflang
+		public T visit(AST.AddExp e, U env);
+		public T visit(AST.Unit e, U env);
+		public T visit(AST.Const e, U env);
+		public T visit(AST.StrConst e, U env);
+		public T visit(AST.BoolConst e, U env);
+		public T visit(AST.DivExp e, U env);
+		public T visit(AST.ErrorExp e, U env);
+		public T visit(AST.MultExp e, U env);
+		public T visit(AST.Program p, U env);
+		public T visit(AST.SubExp e, U env);
+		public T visit(AST.VarExp e, U env);
+		public T visit(AST.LetExp e, U env); // New for the varlang
+		public T visit(AST.DefineDecl d, U env); // New for the definelang
+		public T visit(AST.ReadExp e, U env); // New for the funclang
+		public T visit(AST.EvalExp e, U env); // New for the funclang
+		public T visit(AST.LambdaExp e, U env); // New for the funclang
+		public T visit(AST.CallExp e, U env); // New for the funclang
+		public T visit(AST.LetrecExp e, U env); // New for the funclang
+		public T visit(AST.IfExp e, U env); // Additional expressions for convenience
+		public T visit(AST.LessExp e, U env); // Additional expressions for convenience
+		public T visit(AST.EqualExp e, U env); // Additional expressions for convenience
+		public T visit(AST.GreaterExp e, U env); // Additional expressions for convenience
+		public T visit(AST.CarExp e, U env); // Additional expressions for convenience
+		public T visit(AST.CdrExp e, U env); // Additional expressions for convenience
+		public T visit(AST.ConsExp e, U env); // Additional expressions for convenience
+		public T visit(AST.ListExp e, U env); // Additional expressions for convenience
+		public T visit(AST.NullExp e, U env); // Additional expressions for convenience
+		public T visit(AST.RefExp e, U env); // New for the Reflang
+		public T visit(AST.DerefExp e, U env); // New for the Reflang
+		public T visit(AST.AssignExp e, U env); // New for the Reflang
+		public T visit(AST.FreeExp e, U env); // New for the Reflang
 	}	
 }

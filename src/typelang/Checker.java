@@ -1,68 +1,74 @@
 package typelang;
 
-import typelang.AST.AddExp;
-import typelang.AST.AssignExp;
-import typelang.AST.BoolConst;
-import typelang.AST.CallExp;
-import typelang.AST.CarExp;
-import typelang.AST.CdrExp;
-import typelang.AST.ConsExp;
-import typelang.AST.Const;
-import typelang.AST.DefineDecl;
-import typelang.AST.DerefExp;
-import typelang.AST.DivExp;
-import typelang.AST.EqualExp;
-import typelang.AST.ErrorExp;
-import typelang.AST.EvalExp;
-import typelang.AST.FreeExp;
-import typelang.AST.GreaterExp;
-import typelang.AST.IfExp;
-import typelang.AST.LambdaExp;
-import typelang.AST.LessExp;
-import typelang.AST.LetExp;
-import typelang.AST.LetrecExp;
-import typelang.AST.ListExp;
-import typelang.AST.MultExp;
-import typelang.AST.NullExp;
-import typelang.AST.Program;
-import typelang.AST.ReadExp;
-import typelang.AST.RefExp;
-import typelang.AST.StrConst;
-import typelang.AST.SubExp;
-import typelang.AST.Unit;
-import typelang.AST.VarExp;
-import typelang.AST.Visitor;
+import java.util.List;
 
-public class Checker implements Visitor<Type> {
+import typelang.AST.*;
+import typelang.Type.NumT;
+
+public class Checker implements Visitor<Type,Env> {
+
+    Type check(Program p) {
+		return (Type) p.accept(this, null);
+	}
 
 	@Override
 	public Type visit(AddExp e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		// Logical assertion: precondition => implications.
+		// Let program = "(+ 300 42)", 
+		// AST is (Program (AddExp (Const 300) (Const 42))).
+		
+		// This program's type is NumT.
+		// This is because the contained subexpression's type is NumT.
+		// This is because the contained subexpression is an addition.
+		// An addition expression has type NumT, if and only if,
+		// all of its operands have type NumT,
+		// and Const expressions have type NumT.
+		
+		// Let program = "(+ 300 "42")", 
+		// AST is (Program (AddExp (Const 300) (StrConst "42"))).
+
+		// This program's type is ErrorT.
+		// This is because the contained subexpression's type is ErrorT.
+		// This is because the contained subexpression is an addition.
+		// An addition expression has type NumT, if and only if,
+		// all of its operands have type NumT,
+		// First Const expressions has type NumT, but second StrConst
+		// expression has type StringT.
+		
+		// Let program = "(+ 300 x)", 
+		// AST is (Program (AddExp (Const 300) (VarExp x))).
+
+		List<Exp> operands = e.all();
+		for(Exp exp: operands) {
+			Type intermediate = (Type) exp.accept(this, env); // Static type-checking
+			if(!(intermediate instanceof Type.NumT))
+				return Type.ErrorT.getInstance();
+		}
+		return NumT.getInstance();
 	}
 
 	@Override
 	public Type visit(Unit e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		return Type.UnitT.getInstance();
 	}
 
 	@Override
 	public Type visit(Const e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		// Let program = "1", AST is (Program (Const 1)).
+		return NumT.getInstance();
 	}
 
 	@Override
 	public Type visit(StrConst e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		// Let program = "hello", AST is (Program (StrConst "hello")).
+		return Type.StringT.getInstance();
 	}
 
 	@Override
 	public Type visit(BoolConst e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		// Let program = "#t", AST is (Program (BoolConst "#t")).
+		// Let program = "#f", AST is (Program (BoolConst "#f")).
+		return Type.BoolT.getInstance();
 	}
 
 	@Override
@@ -73,8 +79,7 @@ public class Checker implements Visitor<Type> {
 
 	@Override
 	public Type visit(ErrorExp e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		return Type.ErrorT.getInstance();
 	}
 
 	@Override
@@ -85,8 +90,9 @@ public class Checker implements Visitor<Type> {
 
 	@Override
 	public Type visit(Program p, Env env) {
-		// TODO Auto-generated method stub
-		return null;
+		for(DefineDecl d: p.decls())
+			d.accept(this, env); //TODO: check if define decls type-checked.
+		return (Type) p.e().accept(this, env);
 	}
 
 	@Override

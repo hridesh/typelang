@@ -9,11 +9,15 @@ public class Printer {
 		if(v.tostring() != "")
 			System.out.println(v.tostring());
 	}
+	public void print(Type t) {
+		if(t.tostring() != "")
+			System.out.println(t.tostring());
+	}
 	public void print(Exception e) {
 		System.out.println(e.toString());
 	}
 	
-	public static class Formatter implements AST.Visitor<String> {
+	public static class Formatter implements AST.Visitor<String, Env> {
 		
 		public String visit(AST.AddExp e, Env env) {
 			String result = "(+ ";
