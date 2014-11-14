@@ -15,15 +15,15 @@ public interface Value {
         public int loc() { return _loc; }
     }
 	static class FunVal implements Value { //New in the funclang
-		private Env _env;
+		private Env<Value> _env;
 		private List<String> _formals;
 		private Exp _body;
-		public FunVal(Env env, List<String> formals, Exp body) {
+		public FunVal(Env<Value> env, List<String> formals, Exp body) {
 			_env = env;
 			_formals = formals;
 			_body = body;
 		}
-		public Env env() { return _env; }
+		public Env<Value> env() { return _env; }
 		public List<String> formals() { return _formals; }
 		public Exp body() { return _body; }
 	    public String tostring() { 

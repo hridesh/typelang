@@ -1,18 +1,20 @@
 package typelang;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import typelang.AST.*;
+import typelang.Env.ExtendEnv;
 import typelang.Type.NumT;
 
-public class Checker implements Visitor<Type,Env> {
+public class Checker implements Visitor<Type,Env<Type>> {
 
     Type check(Program p) {
 		return (Type) p.accept(this, null);
 	}
 
 	@Override
-	public Type visit(AddExp e, Env env) {
+	public Type visit(AddExp e, Env<Type> env) {
 		// Logical assertion: precondition => implications.
 		// Let program = "(+ 300 42)", 
 		// AST is (Program (AddExp (Const 300) (Const 42))).
@@ -48,181 +50,190 @@ public class Checker implements Visitor<Type,Env> {
 	}
 
 	@Override
-	public Type visit(Unit e, Env env) {
+	public Type visit(Unit e, Env<Type> env) {
 		return Type.UnitT.getInstance();
 	}
 
 	@Override
-	public Type visit(Const e, Env env) {
+	public Type visit(Const e, Env<Type> env) {
 		// Let program = "1", AST is (Program (Const 1)).
 		return NumT.getInstance();
 	}
 
 	@Override
-	public Type visit(StrConst e, Env env) {
+	public Type visit(StrConst e, Env<Type> env) {
 		// Let program = "hello", AST is (Program (StrConst "hello")).
 		return Type.StringT.getInstance();
 	}
 
 	@Override
-	public Type visit(BoolConst e, Env env) {
+	public Type visit(BoolConst e, Env<Type> env) {
 		// Let program = "#t", AST is (Program (BoolConst "#t")).
 		// Let program = "#f", AST is (Program (BoolConst "#f")).
 		return Type.BoolT.getInstance();
 	}
 
 	@Override
-	public Type visit(DivExp e, Env env) {
+	public Type visit(DivExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(ErrorExp e, Env env) {
+	public Type visit(ErrorExp e, Env<Type> env) {
 		return Type.ErrorT.getInstance();
 	}
 
 	@Override
-	public Type visit(MultExp e, Env env) {
+	public Type visit(MultExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(Program p, Env env) {
+	public Type visit(Program p, Env<Type> env) {
 		for(DefineDecl d: p.decls())
 			d.accept(this, env); //TODO: check if define decls type-checked.
 		return (Type) p.e().accept(this, env);
 	}
 
 	@Override
-	public Type visit(SubExp e, Env env) {
+	public Type visit(SubExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(VarExp e, Env env) {
+	public Type visit(VarExp e, Env<Type> env) {
+		return env.get(e.name());
+	}
+
+	@Override
+	public Type visit(LetExp e, Env<Type> env) {
+		List<String> names = e.names();
+		List<Exp> value_exps = e.value_exps();
+		List<Type> values = new ArrayList<Type>(value_exps.size());
+		
+		for(Exp exp : value_exps) 
+			values.add((Type)exp.accept(this, env));
+		
+		Env<Type> new_env = env;
+		for (int index = 0; index < names.size(); index++)
+			new_env = new ExtendEnv<Type>(new_env, names.get(index), values.get(index));
+
+		return (Type) e.body().accept(this, new_env);		
+	}
+
+	@Override
+	public Type visit(DefineDecl d, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(LetExp e, Env env) {
+	public Type visit(ReadExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(DefineDecl d, Env env) {
+	public Type visit(EvalExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(ReadExp e, Env env) {
+	public Type visit(LambdaExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(EvalExp e, Env env) {
+	public Type visit(CallExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(LambdaExp e, Env env) {
+	public Type visit(LetrecExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(CallExp e, Env env) {
+	public Type visit(IfExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(LetrecExp e, Env env) {
+	public Type visit(LessExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(IfExp e, Env env) {
+	public Type visit(EqualExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(LessExp e, Env env) {
+	public Type visit(GreaterExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(EqualExp e, Env env) {
+	public Type visit(CarExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(GreaterExp e, Env env) {
+	public Type visit(CdrExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(CarExp e, Env env) {
+	public Type visit(ConsExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(CdrExp e, Env env) {
+	public Type visit(ListExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(ConsExp e, Env env) {
+	public Type visit(NullExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(ListExp e, Env env) {
+	public Type visit(RefExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(NullExp e, Env env) {
+	public Type visit(DerefExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(RefExp e, Env env) {
+	public Type visit(AssignExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Type visit(DerefExp e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Type visit(AssignExp e, Env env) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Type visit(FreeExp e, Env env) {
+	public Type visit(FreeExp e, Env<Type> env) {
 		// TODO Auto-generated method stub
 		return null;
 	}
