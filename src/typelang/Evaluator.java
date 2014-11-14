@@ -175,8 +175,8 @@ public class Evaluator implements Visitor<Value,Env<Value>> {
 			ExtendEnv<Value> f = (ExtendEnv<Value>) fst;
 			return new ExtendEnv<>(appendEnv(f.saved_env(),snd), f.var(), f.val());
 		}
-		ExtendEnvRec<Value> f = (ExtendEnvRec<Value>) fst;
-		return new ExtendEnvRec<>(appendEnv(f.saved_env(),snd), f.names(), f.vals());
+		ExtendEnvRec f = (ExtendEnvRec) fst;
+		return new ExtendEnvRec(appendEnv(f.saved_env(),snd), f.names(), f.vals());
 	}
 	/* End: helper for CallExp */
 	
@@ -295,7 +295,7 @@ public class Evaluator implements Visitor<Value,Env<Value>> {
 		for(Exp exp : fun_exps) 
 			funs.add((Value.FunVal)exp.accept(this, env));
 
-		Env<Value> new_env = new ExtendEnvRec<>(env, names, funs);
+		Env<Value> new_env = new ExtendEnvRec(env, names, funs);
 		return (Value) e.body().accept(this, new_env);		
 	}	
     

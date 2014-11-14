@@ -54,20 +54,20 @@ public interface Env <T> {
 		public T val() { return _val; }
 	}
 
-	static public class ExtendEnvRec <T> implements Env <T> {
-		private Env<T> _saved_env;
+	static public class ExtendEnvRec implements Env <Value> {
+		private Env<Value> _saved_env;
 		private List<String> _names;
 		private List<Value.FunVal> _funs;
-		public Env<T> saved_env() { return _saved_env; }
+		public Env<Value> saved_env() { return _saved_env; }
 		public List<String> names() { return _names; }
 		public List<FunVal> vals() { return _funs; }
-		public ExtendEnvRec(Env<T> saved_env, List<String> names, List<Value.FunVal> funs){
+		public ExtendEnvRec(Env<Value> saved_env, List<String> names, List<Value.FunVal> funs){
 			_saved_env = saved_env;
 			_names = names;
 			_funs = funs;
 		}
 		public boolean isEmpty() { return false; }
-		public T get (String search_var) {
+		public Value get (String search_var) {
 			int size = _names.size();
 			for(int index = 0; index < size; index++) {
 				if (search_var.equals(_names.get(index))) {
