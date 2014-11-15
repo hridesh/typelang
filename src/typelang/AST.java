@@ -15,6 +15,7 @@ public interface AST {
 	public static abstract class ASTNode implements AST {
 		public abstract Object accept(Visitor visitor, Object env);
 	}
+
 	public static class Program extends ASTNode {
 		List<DefineDecl> _decls;
 		Exp _e;
@@ -36,9 +37,8 @@ public interface AST {
 			return visitor.visit(this, env);
 		}
 	}
-	public static abstract class Exp extends ASTNode {
 
-	}
+	public static abstract class Exp extends ASTNode {}
 
 	public static class VarExp extends Exp {
 		String _name;
@@ -57,7 +57,6 @@ public interface AST {
 	}
 
 	public static class Unit extends Exp {
-		
 		public Unit() {}
 
 		public Object accept(Visitor visitor, Object env) {
@@ -261,11 +260,14 @@ public interface AST {
 	 */
 	public static class LetExp extends Exp {
 		List<String> _names;
+		List<Type> _varTypes;
 		List<Exp> _value_exps; 
 		Exp _body;
 		
-		public LetExp(List<String> names, List<Exp> value_exps, Exp body) {
+		public LetExp(List<String> names, List<Type> varTypes,
+				List<Exp> value_exps, Exp body) {
 			_names = names;
+			_varTypes = varTypes;
 			_value_exps = value_exps;
 			_body = body;
 		}
@@ -273,13 +275,14 @@ public interface AST {
 		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
-		
+
 		public List<String> names() { return _names; }
-		
+
+		public List<Type> varTypes() { return _varTypes; }
+
 		public List<Exp> value_exps() { return _value_exps; }
 
 		public Exp body() { return _body; }
-
 	}
 	
 	/**
@@ -292,21 +295,24 @@ public interface AST {
 	 */
 	public static class DefineDecl extends Exp {
 		String _name;
+		Type _type;
 		Exp _value_exp; 
 		
-		public DefineDecl(String name, Exp value_exp) {
+		public DefineDecl(String name, Type type, Exp value_exp) {
 			_name = name;
+			_type = type;
 			_value_exp = value_exp;
 		}
 		
 		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
-		
-		public String name() { return _name; }
-		
-		public Exp value_exp() { return _value_exp; }
 
+		public String name() { return _name; }
+
+		public Type type() { return _type; }
+
+		public Exp value_exp() { return _value_exp; }
 	}
 	
 	/**
@@ -317,17 +323,21 @@ public interface AST {
 	 */
 	public static class LambdaExp extends Exp {		
 		List<String> _formals;
+		Type _type;
 		Exp _body;
 		
-		public LambdaExp(List<String> formals, Exp body) {
+		public LambdaExp(List<String> formals, Type type, Exp body) {
 			_formals = formals;
+			_type = type;
 			_body = body;
 		}
-		
+
 		public List<String> formals() { return _formals; }
-		
+
+		public Type type() { return _type; }
+
 		public Exp body() { return _body; }
-		
+
 		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
@@ -346,12 +356,15 @@ public interface AST {
 		public CallExp(Exp operator, List<Exp> operands) {
 			_operator = operator; 
 			_operands = operands;
+if (operands.isEmpty()) {
+	throw new Error();
+}
 		}
-		
+
 		public Exp operator() { return _operator; }
 
 		public List<Exp> operands() { return _operands; }
-		
+
 		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
@@ -519,10 +532,16 @@ public interface AST {
 	 *
 	 */
 	public static class ListExp extends Exp {
-		private List<Exp> _elems; 
-		public ListExp(List<Exp> elems){
+		private List<Exp> _elems;
+		private Type _type;
+
+		public ListExp(Type type, List<Exp> elems) {
+			_type = type;
 			_elems = elems;
 		}
+
+		public Type type() { return _type; }
+
 		public List<Exp> elems() { return _elems; }
 		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
@@ -590,25 +609,29 @@ public interface AST {
 	 */
 	public static class LetrecExp extends Exp {
 		List<String> _names;
+		List<Type> _types;
 		List<Exp> _fun_exps; 
 		Exp _body;
 		
-		public LetrecExp(List<String> names, List<Exp> fun_exps, Exp body) {
+		public LetrecExp(List<String> names, List<Type> types,
+				List<Exp> fun_exps, Exp body) {
 			_names = names;
+			_types = types;
 			_fun_exps = fun_exps;
 			_body = body;
 		}
-		
+
 		public Object accept(Visitor visitor, Object env) {
 			return visitor.visit(this, env);
 		}
-		
+
 		public List<String> names() { return _names; }
-		
+
+		public List<Type> types() { return _types; }
+
 		public List<Exp> fun_exps() { return _fun_exps; }
 
 		public Exp body() { return _body; }
-
 	}
 
     /**
@@ -621,9 +644,11 @@ public interface AST {
      */
     public static class RefExp extends Exp {
             private Exp _value_exp;
+            Type _type;
 
-            public RefExp(Exp value_exp) {
-                    _value_exp = value_exp;
+            public RefExp(Exp value_exp, Type type) {
+            	_value_exp = value_exp;
+            	_type = type;
             }
 
             public Object accept(Visitor visitor, Object env) {
@@ -632,6 +657,7 @@ public interface AST {
 
             public Exp value_exp() { return _value_exp; }
 
+            public Type type() { return _type; }
     }
 
     /**

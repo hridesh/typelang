@@ -17,32 +17,35 @@ import org.antlr.v4.tool.Grammar;
 import org.antlr.v4.tool.LexerGrammar;
 
 import typelang.AST.*;
+import typelang.Type.*;
 
 public class Reader {
-	
+
 	private static String GRAMMAR_FILE = "build/typelang/RefLang.g";
-	//Following are ANTLR constants - Change them if you change the Grammar.
-	//Convention: New rules are always added at the end of the file. 
+	// Following are ANTLR constants - Change them if you change the Grammar.
+	// Convention: New rules are always added at the end of the file. 
 	private static final String startRule = "program";
 	private static final int 
-		program = 0, definedecl = 1, exp = 2, varexp = 3, numexp = 4, strconst = 5,
-		boolconst = 6, addexp = 7, subexp = 8, multexp = 9, divexp = 10,
-		letexp = 11, // New expression for the varlang language.
-		lambdaexp = 12, callexp = 13, // New expressions for this language.
-		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
-		carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22,
-		letrecexp = 23, // New expression for the letrec language.
-		refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27 // New expression for the typelang language.
-		;
+	program = 0, definedecl = 1, exp = 2, varexp = 3, numexp = 4, strconst = 5,
+	boolconst = 6, addexp = 7, subexp = 8, multexp = 9, divexp = 10,
+	letexp = 11, // New expression for the varlang language.
+	lambdaexp = 12, callexp = 13, // New expressions for this language.
+	ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
+	carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22,
+	letrecexp = 23, // New expression for the letrec language.
+	refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27 // New expression for the typelang language.
+	, type = 28, booltype = 29, funtype = 30, inttype = 31, listtype = 32,
+	pairtype = 33, reftype = 34, stringtype = 35, voidtype = 36
+	;
 
 	private static final boolean DEBUG = false;
-	
+
 	Program read() throws IOException {
 		String programText = readNextProgram();
 		Program program = parse(programText);
 		return program;
 	}
-	
+
 	Program parse(String programText) {
 		final LexerInterpreter lexEngine = lg.createLexerInterpreter(
 				new ANTLRInputStream(programText));
@@ -54,13 +57,13 @@ public class Reader {
 		Program program = convertParseTreeToAST(parser, t);
 		return program;
 	}
-	
+
 	private Program convertParseTreeToAST(ParserInterpreter parser, ParseTree parseTree) {
 		// We know that top-level parse tree node is a program, and for this 
 		// language it contains an list of zero or more declarations followed by 
 		// a single expression, so we first extract the declarations and then convert the 
 		// enclosing expression's parse tree to the AST used by this interpreter.
-		int numDecls = parseTree.getChildCount() - 1;		
+		int numDecls = parseTree.getChildCount() - 1;
 		List<DefineDecl> definedecls = new ArrayList<DefineDecl>();
 		TreeToExpConverter convertor = new TreeToExpConverter(parser);
 		for(int i=0; i < numDecls ; i++) 
@@ -72,7 +75,7 @@ public class Reader {
 		} 
 		return new Program(definedecls, exp);
 	}
-	
+
 	private static final LexerGrammar lg = createLexicalGrammar();
 	private static LexerGrammar createLexicalGrammar() {
 		LexerGrammar lg = null;
@@ -134,11 +137,14 @@ public class Reader {
 	 * 
 	 */
 	class TreeToExpConverter implements ParseTreeVisitor<AST.Exp> {
+		TreeToTypeConverter tttc;
 
 		ParserInterpreter parser;
 
 		TreeToExpConverter(ParserInterpreter parser) {
 			this.parser = parser;
+
+			tttc = new TreeToTypeConverter(parser);
 		}
 
 		public AST.Exp visit(ParseTree tree) {
@@ -146,42 +152,42 @@ public class Reader {
 			return null;
 		}
 
-		public AST.Exp visitChildren(RuleNode node) {			
+		public AST.Exp visitChildren(RuleNode node) {
 			switch(node.getRuleContext().getRuleIndex()){
-				case varexp: return convertVarExp(node);
-				case numexp: return convertConst(node);
-				case strconst: return convertStrConst(node);
-				case boolconst: return convertBoolConst(node);
-				case addexp: return convertAddExp(node); 
-				case subexp: return convertSubExp(node); 
-				case multexp: return convertMultExp(node);
-				case divexp: return convertDivExp(node);
-				case letexp: return convertLetExp(node);
-				case definedecl: return convertDefineDecl(node);
-				case lambdaexp: return convertLambdaExp(node);
-				case callexp: return convertCallExp(node);
-				case ifexp: return convertIfExp(node);
-				case lessexp: return convertLessExp(node);
-				case equalexp: return convertEqualExp(node);
-				case greaterexp: return convertGreaterExp(node);
-				case carexp: return convertCarExp(node);
-				case cdrexp: return convertCdrExp(node);
-				case consexp: return convertConsExp(node);
-				case listexp: return convertListExp(node);
-				case nullexp: return convertNullExp(node);
-				case letrecexp: return convertLetrecExp(node);
-                                case refexp: return convertRefExp(node);
-                                case derefexp: return convertDerefExp(node);
-                                case assignexp: return convertAssignExp(node);
-                                case freeexp: return convertFreeExp(node);
-				case exp: return visitChildrenHelper(node).get(0);
-				case program: 
-				default: 
-					System.out.println("Conversion error (from parse tree to AST): found unknown/unhandled case " + parser.getRuleNames()[node.getRuleContext().getRuleIndex()]);
+			case varexp: return convertVarExp(node);
+			case numexp: return convertConst(node);
+			case strconst: return convertStrConst(node);
+			case boolconst: return convertBoolConst(node);
+			case addexp: return convertAddExp(node); 
+			case subexp: return convertSubExp(node); 
+			case multexp: return convertMultExp(node);
+			case divexp: return convertDivExp(node);
+			case letexp: return convertLetExp(node);
+			case definedecl: return convertDefineDecl(node);
+			case lambdaexp: return convertLambdaExp(node);
+			case callexp: return convertCallExp(node);
+			case ifexp: return convertIfExp(node);
+			case lessexp: return convertLessExp(node);
+			case equalexp: return convertEqualExp(node);
+			case greaterexp: return convertGreaterExp(node);
+			case carexp: return convertCarExp(node);
+			case cdrexp: return convertCdrExp(node);
+			case consexp: return convertConsExp(node);
+			case listexp: return convertListExp(node);
+			case nullexp: return convertNullExp(node);
+			case letrecexp: return convertLetrecExp(node);
+			case refexp: return convertRefExp(node);
+			case derefexp: return convertDerefExp(node);
+			case assignexp: return convertAssignExp(node);
+			case freeexp: return convertFreeExp(node);
+			case exp: return visitChildrenHelper(node).get(0);
+			case program: 
+			default: 
+				System.out.println("Conversion error (from parse tree to AST): found unknown/unhandled case " + parser.getRuleNames()[node.getRuleContext().getRuleIndex()]);
 			}
 			return null;
 		}
-		
+
 		/**
 		 *  Syntax: Identifier
 		 */  
@@ -189,7 +195,7 @@ public class Reader {
 			if(node.getChildCount() > 1)
 				throw new ConversionException("Conversion error: " + node.toStringTree(parser) + ", " + 
 						"expected only Identifier, found " + node.getChildCount() +  " nodes.");
-				
+
 			String s = node.getChild(0).getText();
 			return new AST.VarExp(s);
 		}
@@ -211,7 +217,7 @@ public class Reader {
 						"expected Number, found " + node.getChild(0).toStringTree(parser));
 			}
 		}
-		
+
 		/**
 		 *  Syntax: "a string"
 		 */  
@@ -239,7 +245,7 @@ public class Reader {
 			List<AST.Exp> operands = expectOperands(node, index);
 			return new AST.AddExp(operands);
 		}
-		
+
 		/**
 		 *  Syntax: (- exp* )
 		 */  
@@ -277,18 +283,25 @@ public class Reader {
 			expect(node,index++, ")");
 			return operands;
 		}
-		
+
 		/**
 		 *  Syntax: (let ((name value_exp)* ) body_exp)
 		 */  
 		private AST.Exp convertLetExp(RuleNode node){
 			int index = expect(node,0,"(", "let", "(");
 			List<String> names = new ArrayList<String>();	
+			List<Type> types = new ArrayList<>();
 			List<AST.Exp> value_exps = new ArrayList<AST.Exp>();	
 			while (match(node,index,"(")) {
 				index++;
 				String name = expectString(node, index++, 1)[0];
 				names.add(name);
+
+				expect(node, index++, ":");
+
+				Type type = node.getChild(index++).accept(tttc);
+				types.add(type);
+
 				AST.Exp value_exp = expectExp(node, index++, 1)[0];
 				value_exps.add(value_exp);
 				index = expect(node,index, ")");
@@ -296,7 +309,7 @@ public class Reader {
 			expect(node,index++, ")");
 			AST.Exp body = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
-			return new AST.LetExp(names,value_exps,body);
+			return new AST.LetExp(names, types, value_exps, body);
 		}
 
 		/**
@@ -305,27 +318,37 @@ public class Reader {
 		private AST.Exp convertDefineDecl(RuleNode node){
 			int index = expect(node,0,"(", "define");
 			String name = expectString(node, index++, 1)[0];
+
+			expect(node, index++, ":");
+
+			Type type = node.getChild(index++).accept(tttc);
+
 			AST.Exp value_exp = expectExp(node, index++, 1)[0];
 			expect(node,index++, ")");
-			return new AST.DefineDecl(name,value_exp);
+			return new AST.DefineDecl(name, type, value_exp);
 		}
-		
+
 		/**
 		 *  Syntax: ( lambda ( Identifier+ ) body_exp )
 		 */
 		private AST.Exp convertLambdaExp(RuleNode node){
 			int index = expect(node,0,"(", "lambda", "(");
 			List<String> formals = new ArrayList<String>();	
-			while (!match(node,index,")")) {
+			while (!match(node,index,":")) {
 				String formal = expectString(node, index++, 1)[0];
 				formals.add(formal);
 			}
+
+			expect(node, index++, ":");
+
+			Type type = node.getChild(index++).accept(tttc);
+
 			expect(node,index++, ")");
 			AST.Exp body_exp = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
-			return new AST.LambdaExp(formals, body_exp);
+			return new AST.LambdaExp(formals, type, body_exp);
 		}
-		
+
 		/**
 		 *  Syntax: ( operator_exp operand_exp* )
 		 */
@@ -352,7 +375,7 @@ public class Reader {
 			expect(node,index++, ")");
 			return new AST.IfExp(conditional, then_exp, else_exp);
 		}
-		
+
 		/**
 		 *  Syntax: ( < first_exp second_exp )
 		 */
@@ -363,7 +386,7 @@ public class Reader {
 			expect(node,index++, ")");
 			return new AST.LessExp(first_exp, second_exp);
 		}
-		
+
 		/**
 		 *  Syntax: ( == first_exp second_exp )
 		 */
@@ -395,7 +418,7 @@ public class Reader {
 			expect(node,index++, ")");
 			return new AST.CarExp(_exp);
 		}
-		
+
 		/**
 		 *  Syntax: ( cdr exp )
 		 */
@@ -411,13 +434,18 @@ public class Reader {
 		 */
 		private AST.Exp convertListExp(RuleNode node){
 			int index = expect(node,0,"(", "list");
-			List<AST.Exp> operands = new ArrayList<AST.Exp>();	
+			List<AST.Exp> operands = new ArrayList<AST.Exp>();
+
+			expect(node, index++, ":");
+
+			Type type = node.getChild(index++).accept(tttc);
+
 			while (!match(node,index,")")) {
 				AST.Exp operand = node.getChild(index++).accept(this);
 				operands.add(operand);
 			}
 			expect(node,index++, ")");
-			return new AST.ListExp(operands);
+			return new AST.ListExp(type, operands);
 		}
 
 		/**
@@ -447,11 +475,18 @@ public class Reader {
 		private AST.Exp convertLetrecExp(RuleNode node){
 			int index = expect(node,0,"(", "letrec", "(");
 			List<String> names = new ArrayList<String>();	
+			List<Type> types = new ArrayList<>();
 			List<AST.Exp> value_exps = new ArrayList<AST.Exp>();	
 			while (match(node,index,"(")) {
 				index++;
 				String name = expectString(node, index++, 1)[0];
 				names.add(name);
+
+				expect(node, index++, ":");
+
+				Type type = node.getChild(index++).accept(tttc);
+				types.add(type);
+
 				AST.Exp value_exp = expectExp(node, index++, 1)[0];
 				value_exps.add(value_exp);
 				index = expect(node,index, ")");
@@ -459,50 +494,55 @@ public class Reader {
 			expect(node,index++, ")");
 			AST.Exp body = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
-			return new AST.LetrecExp(names,value_exps,body);
+			return new AST.LetrecExp(names, types, value_exps, body);
 		}
-        
-                /**
-                 *  Syntax: ( ref value_exp )
-                 */
-                private AST.Exp convertRefExp(RuleNode node){
-                        int index = expect(node,0,"(", "ref");
-                        AST.Exp value_exp = node.getChild(index++).accept(this);
-                        expect(node,index++, ")");
-                        return new AST.RefExp(value_exp);
-                }
-        
-                /**
-                 *  Syntax: ( deref loc_exp )
-                 */
-                private AST.Exp convertDerefExp(RuleNode node){
-                        int index = expect(node,0,"(", "deref");
-                        AST.Exp loc_exp = node.getChild(index++).accept(this);
-                        expect(node,index++, ")");
-                        return new AST.DerefExp(loc_exp);
-                }
-        
-                /**
-                 *  Syntax: ( set! lhs_exp rhs_exp )
-                 */
-                private AST.Exp convertAssignExp(RuleNode node){
-                        int index = expect(node,0,"(", "set!");
-                        AST.Exp lhs_exp = node.getChild(index++).accept(this);
-                        AST.Exp rhs_exp = node.getChild(index++).accept(this);
-                        expect(node,index++, ")");
-                        return new AST.AssignExp(lhs_exp, rhs_exp);
-                }
-                
-                /**
-                 *  Syntax: ( ref value_exp )
-                 */
-                private AST.Exp convertFreeExp(RuleNode node){
-                        int index = expect(node,0,"(", "free");
-                        AST.Exp value_exp = node.getChild(index++).accept(this);
-                        expect(node,index++, ")");
-                        return new AST.FreeExp(value_exp);
-                }
-        
+
+		/**
+		 *  Syntax: ( ref value_exp )
+		 */
+		private AST.Exp convertRefExp(RuleNode node){
+			int index = expect(node,0,"(", "ref");
+
+			expect(node, index++, ":");
+
+			Type type = node.getChild(index++).accept(tttc);
+
+			AST.Exp value_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.RefExp(value_exp, type);
+		}
+
+		/**
+		 *  Syntax: ( deref loc_exp )
+		 */
+		private AST.Exp convertDerefExp(RuleNode node){
+			int index = expect(node,0,"(", "deref");
+			AST.Exp loc_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.DerefExp(loc_exp);
+		}
+
+		/**
+		 *  Syntax: ( set! lhs_exp rhs_exp )
+		 */
+		private AST.Exp convertAssignExp(RuleNode node){
+			int index = expect(node,0,"(", "set!");
+			AST.Exp lhs_exp = node.getChild(index++).accept(this);
+			AST.Exp rhs_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.AssignExp(lhs_exp, rhs_exp);
+		}
+
+		/**
+		 *  Syntax: ( ref value_exp )
+		 */
+		private AST.Exp convertFreeExp(RuleNode node){
+			int index = expect(node,0,"(", "free");
+			AST.Exp value_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.FreeExp(value_exp);
+		}
+
 		public AST.Exp visitTerminal(TerminalNode node) {
 			String s = node.toStringTree(parser);
 			if (isConcreteSyntaxToken(s))
@@ -537,7 +577,7 @@ public class Reader {
 			}
 			return results;
 		}
-				
+
 		/**
 		 * This method filters out those Tokens that are part of the concrete
 		 * syntax and thus are not represented in the abstract syntax.
@@ -551,7 +591,7 @@ public class Reader {
 				return true;
 			return false;
 		}
-		
+
 		/**
 		 * Expect nth, n+1th, ..., n+mth children of node to be expressions
 		 * @param node - node to be examined.
@@ -597,44 +637,180 @@ public class Reader {
 		 * @param tokens - expected strings.
 		 * @return n + tokens.length, if expectations is met. Otherwise, throws ConversionException.
 		 */
-		protected int expect(RuleNode node, int n, String ... tokens){
-			int numTokens = tokens.length;
-			for(int i = 0; i< numTokens; i++) {
-				if (!node.getChild(n+i).toStringTree(parser).equals(tokens[i])) 
-					throw new ConversionException("Conversion error: " + node.toStringTree(parser) + ", " + 
-							"expected " + tokens[i] + ", found " + node.getChild(n+i).toStringTree(parser));
-			}
-			return n+numTokens;
+		protected int expect(RuleNode node, int n, String ... tokens) {
+			return staticexpect(parser, node, n, tokens);
 		}
-		
-		/**
-		 * Test if nth, n+1th, ... children of node match the token 
-		 * @param node - node to be examined.
-		 * @param n - index of child.
-		 * @param tokens - expected strings.
-		 * @return true, if test is met. False, otherwise.
-		 */
-		protected boolean match(RuleNode node, int n, String ... tokens){
-			int numTokens = tokens.length;
-			for(int i = 0; i< numTokens; i++) {
-				if (!node.getChild(n+i).toStringTree(parser).equals(tokens[i])) 
-					return false;
-			}
-			return true;
+
+		protected boolean match(RuleNode node, int n, String ... tokens) {
+			return staticmatch(parser, node, n, tokens);
 		}
 	}
-	
+
+	/**
+	 * Expect nth, n+1th, ... children of node to match the token 
+	 * @param node - node to be examined.
+	 * @param n - index of child.
+	 * @param tokens - expected strings.
+	 * @return n + tokens.length, if expectations is met. Otherwise, throws ConversionException.
+	 */
+	protected int staticexpect(ParserInterpreter parser, RuleNode node, int n,
+			String ... tokens) {
+		int numTokens = tokens.length;
+		for(int i = 0; i< numTokens; i++) {
+			if (!node.getChild(n+i).toStringTree(parser).equals(tokens[i])) 
+				throw new ConversionException("Conversion error: " +
+						node.toStringTree(parser) + ", " + "expected " +
+						tokens[i] + ", found " +
+						node.getChild(n+i).toStringTree(parser));
+		}
+		return n+numTokens;
+	}
+
+	/**
+	 * Test if nth, n+1th, ... children of node match the token 
+	 * @param node - node to be examined.
+	 * @param n - index of child.
+	 * @param tokens - expected strings.
+	 * @return true, if test is met. False, otherwise.
+	 */
+	public static boolean staticmatch(ParserInterpreter parser, RuleNode node,
+			int n, String ... tokens) {
+		int numTokens = tokens.length;
+		for(int i = 0; i < numTokens; i++) {
+			if (!node.getChild(n+i).toStringTree(parser).equals(tokens[i])) 
+				return false;
+		}
+		return true;
+	}
+
 	private String readNextProgram() throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.print("$ ");
 		String programText = br.readLine();
 		return runFile(programText);
 	}
-	
+
 	private String runFile(String programText) throws IOException {
 		if(programText.startsWith("run ")){
 			programText = readFile("build/funclang/" + programText.substring(4));
 		}
 		return programText; 
+	}
+
+	public class TreeToTypeConverter implements ParseTreeVisitor<Type> {
+		public ParserInterpreter parser;
+
+		public TreeToTypeConverter(ParserInterpreter parser) {
+			this.parser = parser;
+		}
+
+		public Type visit(ParseTree tree) {
+			System.out.println("TreeToTypeConverter visit: " +
+					tree.toStringTree(parser));
+			return null;
+		}
+
+		public Type visitChildren(RuleNode node) { 
+			switch(node.getRuleContext().getRuleIndex()){
+			case booltype: return BoolT.getInstance();
+			case funtype: return getFunType(node);
+			case inttype: return NumT.getInstance();
+			case listtype: return getListType(node);
+			case pairtype: return getPairType(node);
+			case reftype: return getRefType(node);
+			case stringtype: return StringT.getInstance();
+			case voidtype: return UnitT.getInstance();
+			case type: return visitChildrenHelper(node);
+			default:
+				System.out.println("Conversion error (from parse tree to AST):"
+						+ " found unknown/unhandled case " +
+						parser.getRuleNames()[node.getRuleContext().getRuleIndex()]);
+				// throw new Error();
+			}
+			return null;
+		}
+
+		public Type visitErrorNode(ErrorNode node) {
+			System.out.println("visitErrorNode: " +
+					node.toStringTree(parser));
+			return Type.ErrorT.getInstance();
+		}
+
+		public Type visitTerminal(TerminalNode node) {
+			String s = node.toStringTree(parser);
+			if (s.compareTo("int") == 0) { return NumT.getInstance(); }
+			if (s.compareTo("boolean") == 0) { return BoolT.getInstance(); }
+			if (s.compareTo("String") == 0) { return StringT.getInstance(); }
+			if (s.compareTo("void") == 0) { return UnitT.getInstance(); }
+
+			System.out.println("visitTerminal: Illegal terminal " + s);
+			return UnitT.getInstance();
+		}
+
+		private FuncT getFunType(RuleNode node){
+			int index = 0;
+
+			staticexpect(parser, node, index++, "(");
+
+			List<Type> argTypes = new ArrayList<>();
+
+			while (!staticmatch(parser, node, index, "->")) {
+				argTypes.add(node.getChild(index++).accept(this));
+			}
+
+			staticexpect(parser, node, index++, "->");
+
+			Type returnType = node.getChild(index++).accept(this);
+
+			staticexpect(parser, node, index++, ")");
+
+			return new FuncT(argTypes, returnType);
+		}
+
+		private ListT getListType(RuleNode node){
+			int index = 0;
+
+			staticexpect(parser, node, index++, "List");
+			staticexpect(parser, node, index++, "<");
+
+			Type type = node.getChild(index++).accept(this);
+
+			staticexpect(parser, node, index++, ">");
+
+			return new ListT(type);
+		}
+
+		private PairT getPairType(RuleNode node){
+			int index = 0;
+
+			staticexpect(parser, node, index++, "(");
+
+			Type t1 = node.getChild(index++).accept(this);
+
+			staticexpect(parser, node, index++, ",");
+
+			Type t2 = node.getChild(index++).accept(this);
+
+			staticexpect(parser, node, index++, ")");
+
+			return new PairT(t1, t2);
+		}
+
+		private RefT getRefType(RuleNode node){
+			int index = 0;
+
+			staticexpect(parser, node, index++, "Ref");
+
+			return new RefT(node.getChild(index++).accept(this));
+		}
+
+		private Type visitChildrenHelper(RuleNode node) {
+			int childCount = node.getChildCount();
+			if (childCount == 1) {
+				Type type = node.getChild(0).accept(this);
+				if (type != null) return type;
+			}
+			throw new Error();
+		}
 	}
 }

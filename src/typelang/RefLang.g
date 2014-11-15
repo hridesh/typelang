@@ -9,6 +9,7 @@ grammar RecLang;
  definedecl  :                
  		'(' Define 
  			Identifier
+ 			':' type
  			exp
  			')' 
  		;
@@ -88,15 +89,15 @@ grammar RecLang;
  		;
 
  letexp  :
- 		'(' Let 
- 			'(' ( '(' Identifier exp ')' )+  ')'
+ 		'(' Let
+ 			'(' ( '(' Identifier ':' type exp ')' )+  ')'
  			exp 
  			')' 
  		;
 
  lambdaexp :
  		'(' Lambda 
- 			'(' Identifier* ')'
+ 			'(' Identifier* ':' type ')'
  			exp 
  			')' 
  		;
@@ -156,7 +157,7 @@ grammar RecLang;
  		;
 
  listexp :
- 		'(' List 
+ 		'(' List ':' type
  		    exp* 
  			')' 
  		;
@@ -169,14 +170,14 @@ grammar RecLang;
 
  letrecexp  :
  		'(' Letrec 
- 			'(' ( '(' Identifier exp ')' )+  ')'
+ 			'(' ( '(' Identifier ':' type exp ')' )+  ')'
  			exp 
  			')' 
  		;
 
 // ******************* New Expressions for RefLang **********************
  refexp  :
-                '(' Ref
+                '(' Ref ':' type
                     exp
                     ')'
                 ;
@@ -200,6 +201,42 @@ grammar RecLang;
                     ')'
                 ;
 
+// ******************* Type Expressions for TypeLang **********************
+type :
+		boolType
+		| funType
+		| intType
+		| listType
+		| pairType
+		| refType
+		| stringType
+		| voidType
+        ;
+
+boolType : BoolType;
+
+funType :
+ 		'(' type* '->' type ')'
+ 		;
+
+intType : IntType;
+
+listType :
+ 		ListType '<' type '>'
+ 		;
+
+pairType :
+ 		'(' type ',' type ')'
+ 		;
+
+refType  :
+        RegType type
+        ;
+
+stringType : StringType;
+
+voidType : VoidType;
+
 // Keywords
 
  Let : 'let' ;
@@ -222,6 +259,13 @@ grammar RecLang;
  Deref : 'deref' ;
  Assign : 'set!' ;
  Free : 'free' ;
+ 
+ IntType : 'int' ;
+ BoolType : 'boolean' ;
+ ListType : 'List' ;
+ RegType : 'Ref' ;
+ StringType : 'String' ;
+ VoidType : 'void' ;
  
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase
