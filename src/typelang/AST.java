@@ -356,9 +356,6 @@ public interface AST {
 		public CallExp(Exp operator, List<Exp> operands) {
 			_operator = operator; 
 			_operands = operands;
-if (operands.isEmpty()) {
-	throw new Error();
-}
 		}
 
 		public Exp operator() { return _operator; }
