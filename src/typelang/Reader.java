@@ -733,7 +733,7 @@ public class Reader {
 		public Type visitErrorNode(ErrorNode node) {
 			System.out.println("visitErrorNode: " +
 					node.toStringTree(parser));
-			return Type.ErrorT.getInstance();
+			return new ErrorT("visitErrorNode: " + node.toStringTree(parser));
 		}
 
 		public Type visitTerminal(TerminalNode node) {

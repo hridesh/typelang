@@ -7,9 +7,13 @@ public interface Type {
 	public boolean typeEqual(Type other);
 
 	static class ErrorT implements Type {
-		private static final ErrorT _instance = new ErrorT();
-		public static ErrorT getInstance() { return _instance; }
-	    public String tostring() { return "error"; }
+		String _message;
+
+		public ErrorT(String message) { _message = message; }
+		
+	    public String tostring() {
+	    	return "error because " + _message;
+	    }
 
 		public boolean typeEqual(Type other) { return other == this; }
 	}

@@ -5,9 +5,11 @@ import java.util.List;
 
 import typelang.AST.*;
 import typelang.Env.ExtendEnv;
+import typelang.Type.ErrorT;
 import typelang.Type.*;
 
 public class Checker implements Visitor<Type,Env<Type>> {
+	Printer.Formatter ts = new Printer.Formatter();
 
     Type check(Program p) {
 		return (Type) p.accept(this, null);
@@ -39,7 +41,7 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		// Let program = "(+ 300 x)", 
 		// AST is (Program (AddExp (Const 300) (VarExp x))).
 
-		return visitCompoundArithExp(e, env);
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(Unit e, Env<Type> env) {
@@ -63,25 +65,30 @@ public class Checker implements Visitor<Type,Env<Type>> {
 	}
 
 	public Type visit(DivExp e, Env<Type> env) {
-		return visitCompoundArithExp(e, env);
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(ErrorExp e, Env<Type> env) {
-		return Type.ErrorT.getInstance();
+		return new ErrorT("Encountered an error type " + ts.visit(e, null));
 	}
 
 	public Type visit(MultExp e, Env<Type> env) {
-		return visitCompoundArithExp(e, env);
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(Program p, Env<Type> env) {
 		Env<Type> new_env = env;
+
 		for (DefineDecl d: p.decls()) {
 			Type type = (Type)d.accept(this, new_env);
+
+			if (type instanceof ErrorT) { return type; }
+
 			Type dType = d.type();
 
 			if (!type.typeEqual(dType)) {
-				return ErrorT.getInstance();
+				return new ErrorT("Declation type mismatch in program in " +
+						ts.visit(d, null));
 			}
 
 			new_env = new ExtendEnv<Type>(new_env, d.name(), dType);
@@ -90,20 +97,40 @@ public class Checker implements Visitor<Type,Env<Type>> {
 	}
 
 	public Type visit(SubExp e, Env<Type> env) {
-		return visitCompoundArithExp(e, env);
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(VarExp e, Env<Type> env) {
-		return env.get(e.name());
+		try {
+			return env.get(e.name());
+		} catch(Exception ex) {
+			return new ErrorT("Variable " + e.name() +
+					" has not been declared in " + ts.visit(e, null));
+		}
 	}
 
 	public Type visit(LetExp e, Env<Type> env) {
 		List<String> names = e.names();
 		List<Exp> value_exps = e.value_exps();
+		List<Type> types = e.varTypes();
 		List<Type> values = new ArrayList<Type>(value_exps.size());
 
-		for (Exp exp : value_exps) 
-			values.add((Type)exp.accept(this, env));
+		int i = 0;
+		for (Exp exp : value_exps) {
+			Type type = (Type)exp.accept(this, env);
+			if (type instanceof ErrorT) { return type; }
+
+			Type argType = types.get(i);
+			if (type.typeEqual(argType)) {
+				return new ErrorT("The declared type of the " + i +
+						" let variable and the actual type mismatch, expect " +
+						argType + " found " + type.tostring() + " in " +
+						ts.visit(e, null));
+			}
+
+			values.add(type);
+			i++;
+		}
 
 		Env<Type> new_env = env;
 		for (int index = 0; index < names.size(); index++)
@@ -131,10 +158,15 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		List<String> names = e.formals();
 		Type type = e.type();
 
+		String message = "The declared type of a lambda expression should be "
+				+ "of function type in ";
 		if (type instanceof FuncT) {
 			FuncT ft = (FuncT)type;
 
 			List<Type> types = ft.argTypes();
+
+			message = "The number of formal parameters and the number of "
+					+ "arguments in the function type do not match in ";
 			if (types.size() == names.size()) {
 				Env<Type> new_env = env;
 				int index = 0;
@@ -145,13 +177,19 @@ public class Checker implements Visitor<Type,Env<Type>> {
 				}
 				
 				Type bodyType = (Type) e.body().accept(this, new_env);
+
+				if (bodyType instanceof ErrorT) { return bodyType; }
+
+				message = "The declared return type and the actual return type "
+						+ "mismatch, expect " + type.tostring() + ", but found "
+						+ bodyType.tostring();
 				if (bodyType.typeEqual(ft.returnType())) {
 					return ft;
 				}
 			}
 		}
 
-		return ErrorT.getInstance();
+		return new ErrorT(message + ts.visit(e, null));
 	}
 
 	public Type visit(CallExp e, Env<Type> env) {
@@ -159,25 +197,37 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		List<Exp> operands = e.operands();
 
 		Type type = (Type)operator.accept(this, env);
+		if (type instanceof ErrorT) { return type; }
+
+		String message = "Expect a function type in the call expression, found "
+				+ type.tostring() + " in ";
 		if (type instanceof FuncT) {
 			FuncT ft = (FuncT)type;
 
 			List<Type> argTypes = ft.argTypes();
 			int size_actuals = operands.size();
 			int size_formals = argTypes.size();
+
+			message = "The number of arguments expected is " + size_formals +
+					" found " + size_actuals + " in ";
 			if (size_actuals == size_formals) {
 				for (int i = 0; i < size_actuals; i++) {
 					Exp operand = operands.get(i);
 					Type operand_type = (Type)operand.accept(this, env);
 
+					if (operand_type instanceof ErrorT) { return operand_type; }
+
 					if (!assignable(argTypes.get(i), operand_type)) {
-						return ErrorT.getInstance();
+						return new ErrorT("The expected type of the " + i +
+								" argument is " + argTypes.get(i).tostring() +
+								" found " + operand_type.tostring() + " in " +
+								ts.visit(e, null));
 					}
 				}
 				return ft.returnType();
 			}
 		}
-		return ErrorT.getInstance();
+		return new ErrorT(message + ts.visit(e, null));
 	}
 
 	public Type visit(LetrecExp e, Env<Type> env) {
@@ -196,8 +246,13 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		for (int index = 0; index < names.size(); index++) {
 			Type type = (Type)fun_exps.get(index).accept(this, new_env);
 
+			if (type instanceof ErrorT) { return type; }
+
 			if (!assignable(types.get(index), type)) {
-				return ErrorT.getInstance();
+				return new ErrorT("The expected type of the " + index +
+						" argument is " + types.get(index).tostring() +
+						" found " + type.tostring() + " in " +
+						ts.visit(e, null));
 			}
 		}
 
@@ -207,46 +262,65 @@ public class Checker implements Visitor<Type,Env<Type>> {
 	public Type visit(IfExp e, Env<Type> env) {
 		Exp cond = e.conditional();
 		Type condType = (Type)cond.accept(this, env);
-		if (!(condType instanceof BoolT)) { return ErrorT.getInstance(); }
+		if (condType instanceof ErrorT) { return condType; }
+
+		if (!(condType instanceof BoolT)) {
+			return new ErrorT("The condition should have boolean type, found " +
+					condType.tostring() + " in " + ts.visit(e, null));
+		}
 
 		Type thentype = (Type)e.then_exp().accept(this, env);
-		Type elsetype = (Type)e.else_exp().accept(this, env);
+		if (thentype instanceof ErrorT) { return thentype; }
 
-		return unionType(thentype, elsetype);
+		Type elsetype = (Type)e.else_exp().accept(this, env);
+		if (elsetype instanceof ErrorT) { return elsetype; }
+
+		if (thentype.typeEqual(elsetype)) { return thentype; }
+
+		return new ErrorT("The then and else expressions should have the same "
+				+ "type, then has type " + thentype.tostring() +
+				" else has type " + elsetype.tostring() + " in " +
+				ts.visit(e, null));
 	}
 
 	public Type visit(LessExp e, Env<Type> env) {
-		return visitBinaryComparator(e, env);
+		return visitBinaryComparator(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(EqualExp e, Env<Type> env) {
-		return visitBinaryComparator(e, env);
+		return visitBinaryComparator(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(GreaterExp e, Env<Type> env) {
-		return visitBinaryComparator(e, env);
+		return visitBinaryComparator(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(CarExp e, Env<Type> env) {
 		Exp exp = e.arg();
 		Type type = (Type)exp.accept(this, env);
+		if (type instanceof ErrorT) { return type; }
+
 		if (type instanceof PairT) {
 			PairT pt = (PairT)type;
 			return pt.fst();
 		}
 
-		return ErrorT.getInstance();
+		return new ErrorT("The car expect an expression of type Pair, found "
+				+ type.tostring() + " in " + ts.visit(e, null));
 	}
 
 	public Type visit(CdrExp e, Env<Type> env) {
 		Exp exp = e.arg();
 		Type type = (Type)exp.accept(this, env);
+		if (type instanceof ErrorT) { return type; }
+
 		if (type instanceof PairT) {
 			PairT pt = (PairT)type;
 			return pt.snd();
 		}
 
-		return ErrorT.getInstance();
+		return new ErrorT("The cdr expect an expression of type Pair, found "
+				+ type.tostring() + " in " + ts.visit(e, null));
 	}
 
 	public Type visit(ConsExp e, Env<Type> env) {
@@ -254,10 +328,10 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		Exp snd = e.snd();
 
 		Type t1 = (Type)fst.accept(this, env);
-		if (t1 instanceof ErrorT) { return ErrorT.getInstance(); }
+		if (t1 instanceof ErrorT) { return t1; }
 
 		Type t2 = (Type)snd.accept(this, env);
-		if (t2 instanceof ErrorT) { return ErrorT.getInstance(); }
+		if (t2 instanceof ErrorT) { return t2; }
 
 		return new PairT(t1, t2);
 	}
@@ -266,11 +340,18 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		List<Exp> elems = e.elems();
 		Type type = e.type();
 
+		int index = 0;
 		for (Exp elem : elems) {
 			Type elemType = (Type)elem.accept(this, env);
+			if (elemType instanceof ErrorT) { return elemType; }
+
 			if (!assignable(type, elemType)) {
-				return ErrorT.getInstance();
+				return new ErrorT("The " + index +
+						" expression should have type " + type.tostring() +
+						" found " + elemType.tostring() + " in " +
+						ts.visit(e, null));
 			}
+			index++;
 		}
 		return new ListT(type);
 	}
@@ -278,85 +359,124 @@ public class Checker implements Visitor<Type,Env<Type>> {
 	public Type visit(NullExp e, Env<Type> env) {
 		Exp arg = e.arg();
 		Type type = (Type)arg.accept(this, env);
+		if (type instanceof ErrorT) { return type; }
+
 		if (type instanceof ListT) { return BoolT.getInstance(); }
 
-		return ErrorT.getInstance();
+		return new ErrorT("The null? expect an expression of type List, found "
+				+ type.tostring() + " in " + ts.visit(e, null));
 	}
 
 	public Type visit(RefExp e, Env<Type> env) {
 		Exp value = e.value_exp();
 		Type type = e.type();
 		Type expType = (Type)value.accept(this, env);
+		if (type instanceof ErrorT) { return type; }
+
 		if (expType.typeEqual(type)) {
 			return new RefT(type);
 		}
 
-		return ErrorT.getInstance();
+		return new ErrorT("The Ref expression expect type " + type.tostring() +
+				" found " + expType.tostring() + " in " + ts.visit(e, null));
 	}
 
 	public Type visit(DerefExp e, Env<Type> env) {
 		Exp exp = e.loc_exp();
 		Type type = (Type)exp.accept(this, env);
+		if (type instanceof ErrorT) { return type; }
 
 		if (type instanceof RefT) {
 			RefT rt = (RefT)type;
 			return rt.nestType();
 		}
 
-		return ErrorT.getInstance();
+		return new ErrorT("The dereference expression expect a reference type " +
+				"found " + type.tostring() + " in " + ts.visit(e, null));
 	}
 
 	public Type visit(AssignExp e, Env<Type> env) {
 		Exp lhs_exp = e.lhs_exp();
 		Type lhsType = (Type)lhs_exp.accept(this, env);
-
-        Exp rhs_exp = e.rhs_exp();
-        Type rhsType = (Type)rhs_exp.accept(this, env);
+		if (lhsType instanceof ErrorT) { return lhsType; }
 
         if (lhsType instanceof RefT) {
+        	Exp rhs_exp = e.rhs_exp();
+            Type rhsType = (Type)rhs_exp.accept(this, env);
+            if (rhsType instanceof ErrorT) { return rhsType; }
+
         	RefT rt = (RefT)lhsType;
         	Type nested = rt.nestType();
 
         	if (rhsType.typeEqual(nested)) { return rhsType; }
+
+        	return new ErrorT("The inner type of the reference type is " +
+        			nested.tostring() + " the rhs type is " + rhsType.tostring()
+        			+ " in " + ts.visit(e, null));
         }
 
-		return ErrorT.getInstance();
+        return new ErrorT("The lhs of the assignment expression expect a "
+        		+ "reference type found " + lhsType.tostring() + " in " +
+        		ts.visit(e, null));
 	}
 
 	public Type visit(FreeExp e, Env<Type> env) {
 		Exp exp = e.value_exp();
 		Type type = (Type)exp.accept(this, env);
 
-		if (type instanceof RefT) {
-			return UnitT.getInstance();
-		}
+		if (type instanceof ErrorT) { return type; }
 
-		return ErrorT.getInstance();
+		if (type instanceof RefT) { return UnitT.getInstance(); }
+
+		return new ErrorT("The free expression expect a reference type " +
+				"found " + type.tostring() + " in " + ts.visit(e, null));
 	}
 
-	private boolean isNumType(Exp exp, Env<Type> env) {
-		Type first_type = (Type)exp.accept(this, env);
-		return first_type instanceof NumT;
-	}
-
-	private Type visitBinaryComparator(BinaryComparator e, Env<Type> env) {
+	private Type visitBinaryComparator(BinaryComparator e, Env<Type> env,
+			String printNode) {
 		Exp first_exp = e.first_exp();
 		Exp second_exp = e.second_exp();
 
-		if (!(isNumType(first_exp, env) && isNumType(second_exp, env))){
-			return ErrorT.getInstance();
+		Type first_type = (Type)first_exp.accept(this, env);
+		if (first_type instanceof ErrorT) { return first_type; }
+
+		Type second_type = (Type)second_exp.accept(this, env);
+		if (second_type instanceof ErrorT) { return second_type; }
+
+		if (!(first_type instanceof NumT)) {
+			return new ErrorT("The first argument of a binary expression "
+					+ "should be num Type, found " + first_type.tostring() +
+					" in " + printNode);
+		}
+
+		if (!(second_type instanceof NumT)) {
+			return new ErrorT("The second argument of a binary expression "
+					+ "should be num Type, found " + second_type.tostring() +
+					" in " + printNode);
 		}
 
 		return BoolT.getInstance();
 	}
 
-	private Type visitCompoundArithExp(CompoundArithExp e, Env<Type> env) {
+	private Type visitCompoundArithExp(CompoundArithExp e, Env<Type> env,
+			String printNode) {
 		List<Exp> operands = e.all();
+
+		int index = 0;
 		for (Exp exp: operands) {
 			Type intermediate = (Type) exp.accept(this, env); // Static type-checking
-			if(!(intermediate instanceof Type.NumT))
-				return Type.ErrorT.getInstance();
+			if (intermediate instanceof ErrorT) { return intermediate; }
+
+			if (!(intermediate instanceof Type.NumT)) {
+				return new ErrorT("The " + index +
+						" expression should have type num Type found " +
+						intermediate.tostring() + " in " +
+						printNode);
+			}
+
+			index++;
 		}
+
 		return NumT.getInstance();
 	}
 
@@ -364,11 +484,5 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		if (t2 instanceof UnitT) { return true; }
 
 		return t1.typeEqual(t2);
-	}
-
-	private static Type unionType(Type t1, Type t2) {
-		if (t1.typeEqual(t2)) { return t1; }
-
-		return ErrorT.getInstance();
 	}
 }
