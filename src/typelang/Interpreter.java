@@ -28,10 +28,7 @@ public class Interpreter {
 				Program p = reader.read();
 				Type t = checker.check(p); // Type checking the program
 				if(t instanceof Type.ErrorT)
-{
-System.out.println("type error");
 					printer.print(t);
-}
 				else {
 					try {
 						Value val = eval.valueOf(p);
