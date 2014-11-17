@@ -691,8 +691,8 @@ public class Reader {
 	}
 
 	private String runFile(String programText) throws IOException {
-		if(programText.startsWith("run ")){
-			programText = readFile("build/funclang/" + programText.substring(4));
+		if (programText.startsWith("run ")) {
+			programText = readFile("build/typelang/" + programText.substring(4));
 		}
 		return programText; 
 	}
