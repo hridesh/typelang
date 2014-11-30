@@ -21,7 +21,7 @@ import typelang.Type.*;
 
 public class Reader {
 
-	private static String GRAMMAR_FILE = "build/typelang/RefLang.g";
+	private static String GRAMMAR_FILE = "build/typelang/TypeLang.g";
 	// Following are ANTLR constants - Change them if you change the Grammar.
 	// Convention: New rules are always added at the end of the file. 
 	private static final String startRule = "program";
