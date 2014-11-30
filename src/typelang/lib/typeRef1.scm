@@ -1,1 +1,1 @@
-(ref : Ref int (ref : int 2))
+(ref : Ref num (ref : num 2))

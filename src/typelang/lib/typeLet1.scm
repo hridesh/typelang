@@ -1,1 +1,1 @@
-(let ((x : int 2)) (let ((y : int 5)) (+ x y)))
+(let ((x : num 2)) (let ((y : num 5)) (+ x y)))

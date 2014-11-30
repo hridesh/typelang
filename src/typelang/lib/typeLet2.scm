@@ -1,1 +1,1 @@
-(let ((x : int 2)) (let ((z : (int -> int) (lambda (y : (int -> int)) (+ x y)))) (z 5)))
+(let ((x : num 2)) (let ((z : (num -> num) (lambda (y : (num -> num)) (+ x y)))) (z 5)))

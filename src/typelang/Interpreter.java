@@ -13,11 +13,11 @@ import typelang.AST.*;
 public class Interpreter {
 	public static void main(String[] args) {
 		System.out.println("TypeLang: Type a program to evaluate and press the enter key,\n" + 
-				"e.g. (ref 342) \n" + 
-				"or try (deref (ref 342)) \n" +
-				"or try (let ((class (ref 342))) (deref class)) \n" +
-				"or try (let ((class (ref 342))) (set! class 541)) \n" + 
-				"or try  (let ((r (ref 342))) (let ((d (free r))) (deref r))) \n" +
+				"e.g. ((lambda (x y z : (num num num -> num)) (+ x (+ y z))) 1 2 3) \n" + 
+				"or try (let ((x : num 2)) x) \n" +
+				"or try (car (list : num  1 2 8)) \n" +
+				"or try (ref : num 2) \n" + 
+				"or try  (let ((a : Ref num (ref : num 2))) (set! a (deref a))) \n" +
 				"Press Ctrl + C to exit.");
 		Reader reader = new Reader();
 		Evaluator eval = new Evaluator(reader);

@@ -203,39 +203,39 @@ grammar RecLang;
 
 // ******************* Type Expressions for TypeLang **********************
 type :
-		boolType
-		| funType
-		| intType
-		| listType
-		| pairType
-		| refType
-		| stringType
-		| voidType
+		booltype
+		| funtype
+		| numtype
+		| listtype
+		| pairtype
+		| reftype
+		| stringtype
+		| unittype
         ;
 
-boolType : BoolType;
+booltype : Bool;
 
-funType :
+funtype :
  		'(' type* '->' type ')'
  		;
 
-intType : IntType;
+numtype : Num;
 
-listType :
- 		ListType '<' type '>'
+listtype :
+ 		ListT '<' type '>'
  		;
 
-pairType :
+pairtype :
  		'(' type ',' type ')'
  		;
 
-refType  :
-        RegType type
+reftype  :
+        RefT type
         ;
 
-stringType : StringType;
+stringtype : StringT;
 
-voidType : VoidType;
+unittype : UnitT;
 
 // Keywords
 
@@ -260,12 +260,12 @@ voidType : VoidType;
  Assign : 'set!' ;
  Free : 'free' ;
  
- IntType : 'int' ;
- BoolType : 'boolean' ;
- ListType : 'List' ;
- RegType : 'Ref' ;
- StringType : 'String' ;
- VoidType : 'void' ;
+ Num : 'num' ;
+ Bool : 'bool' ;
+ ListT : 'List' ;
+ RefT : 'Ref' ;
+ StringT : 'String' ;
+ UnitT : 'unit' ;
  
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase

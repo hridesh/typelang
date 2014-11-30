@@ -1,1 +1,1 @@
-(ref : int 2)
+(ref : num 2)

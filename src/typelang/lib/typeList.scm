@@ -1,1 +1,1 @@
-(car (list : int  1 2 8))
+(car (list : num  1 2 8))

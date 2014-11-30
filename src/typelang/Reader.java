@@ -33,9 +33,9 @@ public class Reader {
 	ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
 	carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22,
 	letrecexp = 23, // New expression for the letrec language.
-	refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27 // New expression for the typelang language.
-	, type = 28, booltype = 29, funtype = 30, inttype = 31, listtype = 32,
-	pairtype = 33, reftype = 34, stringtype = 35, voidtype = 36
+	refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27, // New expression for the typelang language.
+	type = 28, booltype = 29, funtype = 30, numtype = 31, listtype = 32,
+	pairtype = 33, reftype = 34, stringtype = 35, unittype = 36
 	;
 
 	private static final boolean DEBUG = false;
@@ -714,12 +714,12 @@ public class Reader {
 			switch(node.getRuleContext().getRuleIndex()){
 			case booltype: return BoolT.getInstance();
 			case funtype: return getFunType(node);
-			case inttype: return NumT.getInstance();
+			case numtype: return NumT.getInstance();
 			case listtype: return getListType(node);
 			case pairtype: return getPairType(node);
 			case reftype: return getRefType(node);
 			case stringtype: return StringT.getInstance();
-			case voidtype: return UnitT.getInstance();
+			case unittype: return UnitT.getInstance();
 			case type: return visitChildrenHelper(node);
 			default:
 				System.out.println("Conversion error (from parse tree to AST):"
@@ -738,10 +738,10 @@ public class Reader {
 
 		public Type visitTerminal(TerminalNode node) {
 			String s = node.toStringTree(parser);
-			if (s.compareTo("int") == 0) { return NumT.getInstance(); }
-			if (s.compareTo("boolean") == 0) { return BoolT.getInstance(); }
+			if (s.compareTo("num") == 0) { return NumT.getInstance(); }
+			if (s.compareTo("bool") == 0) { return BoolT.getInstance(); }
 			if (s.compareTo("String") == 0) { return StringT.getInstance(); }
-			if (s.compareTo("void") == 0) { return UnitT.getInstance(); }
+			if (s.compareTo("unit") == 0) { return UnitT.getInstance(); }
 
 			System.out.println("visitTerminal: Illegal terminal " + s);
 			return UnitT.getInstance();
