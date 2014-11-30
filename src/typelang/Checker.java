@@ -121,11 +121,11 @@ public class Checker implements Visitor<Type,Env<Type>> {
 			if (type instanceof ErrorT) { return type; }
 
 			Type argType = types.get(i);
-			if (type.typeEqual(argType)) {
+			if (!type.typeEqual(argType)) {
 				return new ErrorT("The declared type of the " + i +
 						" let variable and the actual type mismatch, expect " +
-						argType + " found " + type.tostring() + " in " +
-						ts.visit(e, null));
+						argType.tostring() + " found " + type.tostring() +
+						" in " + ts.visit(e, null));
 			}
 
 			values.add(type);
