@@ -419,8 +419,7 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		return new ErrorT("Encountered an error type " + ts.visit(e, null));
 	}
 
-	private Type visitCompoundArithExp(CompoundArithExp e, Env<Type> env,
-			String printNode) {
+	private Type visitCompoundArithExp(CompoundArithExp e, Env<Type> env, String printNode) {
 		List<Exp> operands = e.all();
 
 		for (Exp exp: operands) {
