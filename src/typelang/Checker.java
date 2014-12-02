@@ -423,19 +423,14 @@ public class Checker implements Visitor<Type,Env<Type>> {
 			String printNode) {
 		List<Exp> operands = e.all();
 
-		int index = 0;
 		for (Exp exp: operands) {
 			Type intermediate = (Type) exp.accept(this, env); // Static type-checking
 			if (intermediate instanceof ErrorT) { return intermediate; }
 
 			if (!(intermediate instanceof Type.NumT)) {
-				return new ErrorT("The " + index +
-						" expression should have type num Type found " +
-						intermediate.tostring() + " in " +
-						printNode);
+				return new ErrorT("expected num found " + intermediate.tostring() + 
+						 " in " + printNode);
 			}
-
-			index++;
 		}
 
 		return NumT.getInstance();
