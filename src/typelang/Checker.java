@@ -15,67 +15,6 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		return (Type) p.accept(this, null);
 	}
 
-	public Type visit(AddExp e, Env<Type> env) {
-		// Logical assertion: precondition => implications.
-		// Let program = "(+ 300 42)", 
-		// AST is (Program (AddExp (Const 300) (Const 42))).
-		
-		// This program's type is NumT.
-		// This is because the contained subexpression's type is NumT.
-		// This is because the contained subexpression is an addition.
-		// An addition expression has type NumT, if and only if,
-		// all of its operands have type NumT,
-		// and Const expressions have type NumT.
-		
-		// Let program = "(+ 300 "42")", 
-		// AST is (Program (AddExp (Const 300) (StrConst "42"))).
-
-		// This program's type is ErrorT.
-		// This is because the contained subexpression's type is ErrorT.
-		// This is because the contained subexpression is an addition.
-		// An addition expression has type NumT, if and only if,
-		// all of its operands have type NumT,
-		// First Const expressions has type NumT, but second StrConst
-		// expression has type StringT.
-		
-		// Let program = "(+ 300 x)", 
-		// AST is (Program (AddExp (Const 300) (VarExp x))).
-
-		return visitCompoundArithExp(e, env, ts.visit(e, null));
-	}
-
-	public Type visit(Unit e, Env<Type> env) {
-		return Type.UnitT.getInstance();
-	}
-
-	public Type visit(Const e, Env<Type> env) {
-		// Let program = "1", AST is (Program (Const 1)).
-		return NumT.getInstance();
-	}
-
-	public Type visit(StrConst e, Env<Type> env) {
-		// Let program = "hello", AST is (Program (StrConst "hello")).
-		return Type.StringT.getInstance();
-	}
-
-	public Type visit(BoolConst e, Env<Type> env) {
-		// Let program = "#t", AST is (Program (BoolConst "#t")).
-		// Let program = "#f", AST is (Program (BoolConst "#f")).
-		return Type.BoolT.getInstance();
-	}
-
-	public Type visit(DivExp e, Env<Type> env) {
-		return visitCompoundArithExp(e, env, ts.visit(e, null));
-	}
-
-	public Type visit(ErrorExp e, Env<Type> env) {
-		return new ErrorT("Encountered an error type " + ts.visit(e, null));
-	}
-
-	public Type visit(MultExp e, Env<Type> env) {
-		return visitCompoundArithExp(e, env, ts.visit(e, null));
-	}
-
 	public Type visit(Program p, Env<Type> env) {
 		Env<Type> new_env = env;
 
@@ -87,17 +26,12 @@ public class Checker implements Visitor<Type,Env<Type>> {
 			Type dType = d.type();
 
 			if (!type.typeEqual(dType)) {
-				return new ErrorT("Declation type mismatch in program in " +
-						ts.visit(d, null));
+				return new ErrorT("Expected " + dType + " found " + type + " in " + ts.visit(d, null));
 			}
 
 			new_env = new ExtendEnv<Type>(new_env, d.name(), dType);
 		}
 		return (Type) p.e().accept(this, new_env);
-	}
-
-	public Type visit(SubExp e, Env<Type> env) {
-		return visitCompoundArithExp(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(VarExp e, Env<Type> env) {
@@ -142,16 +76,6 @@ public class Checker implements Visitor<Type,Env<Type>> {
 
 	public Type visit(DefineDecl d, Env<Type> env) {
 		return (Type) d._value_exp.accept(this, env);
-	}
-
-	public Type visit(ReadExp e, Env<Type> env) {
-		// FIXME
-		return UnitT.getInstance();
-	}
-
-	public Type visit(EvalExp e, Env<Type> env) {
-		// FIXME
-		return UnitT.getInstance();
 	}
 
 	public Type visit(LambdaExp e, Env<Type> env) {
@@ -250,7 +174,7 @@ public class Checker implements Visitor<Type,Env<Type>> {
 
 			if (!assignable(types.get(index), type)) {
 				return new ErrorT("The expected type of the " + index +
-						" argument is " + types.get(index).tostring() +
+						" variable is " + types.get(index).tostring() +
 						" found " + type.tostring() + " in " +
 						ts.visit(e, null));
 			}
@@ -281,18 +205,6 @@ public class Checker implements Visitor<Type,Env<Type>> {
 				+ "type, then has type " + thentype.tostring() +
 				" else has type " + elsetype.tostring() + " in " +
 				ts.visit(e, null));
-	}
-
-	public Type visit(LessExp e, Env<Type> env) {
-		return visitBinaryComparator(e, env, ts.visit(e, null));
-	}
-
-	public Type visit(EqualExp e, Env<Type> env) {
-		return visitBinaryComparator(e, env, ts.visit(e, null));
-	}
-
-	public Type visit(GreaterExp e, Env<Type> env) {
-		return visitBinaryComparator(e, env, ts.visit(e, null));
 	}
 
 	public Type visit(CarExp e, Env<Type> env) {
@@ -432,6 +344,34 @@ public class Checker implements Visitor<Type,Env<Type>> {
 				"found " + type.tostring() + " in " + ts.visit(e, null));
 	}
 
+	public Type visit(Unit e, Env<Type> env) {
+		return Type.UnitT.getInstance();
+	}
+
+	public Type visit(Const e, Env<Type> env) {
+		return NumT.getInstance();
+	}
+
+	public Type visit(StrConst e, Env<Type> env) {
+		return Type.StringT.getInstance();
+	}
+
+	public Type visit(BoolConst e, Env<Type> env) {
+		return Type.BoolT.getInstance();
+	}
+
+	public Type visit(LessExp e, Env<Type> env) {
+		return visitBinaryComparator(e, env, ts.visit(e, null));
+	}
+
+	public Type visit(EqualExp e, Env<Type> env) {
+		return visitBinaryComparator(e, env, ts.visit(e, null));
+	}
+
+	public Type visit(GreaterExp e, Env<Type> env) {
+		return visitBinaryComparator(e, env, ts.visit(e, null));
+	}
+
 	private Type visitBinaryComparator(BinaryComparator e, Env<Type> env,
 			String printNode) {
 		Exp first_exp = e.first_exp();
@@ -456,6 +396,27 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		}
 
 		return BoolT.getInstance();
+	}
+
+
+	public Type visit(AddExp e, Env<Type> env) {
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
+	}
+
+	public Type visit(DivExp e, Env<Type> env) {
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
+	}
+
+	public Type visit(MultExp e, Env<Type> env) {
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
+	}
+
+	public Type visit(SubExp e, Env<Type> env) {
+		return visitCompoundArithExp(e, env, ts.visit(e, null));
+	}
+
+	public Type visit(ErrorExp e, Env<Type> env) {
+		return new ErrorT("Encountered an error type " + ts.visit(e, null));
 	}
 
 	private Type visitCompoundArithExp(CompoundArithExp e, Env<Type> env,
@@ -484,5 +445,13 @@ public class Checker implements Visitor<Type,Env<Type>> {
 		if (t2 instanceof UnitT) { return true; }
 
 		return t1.typeEqual(t2);
+	}
+	
+	public Type visit(ReadExp e, Env<Type> env) {
+		return UnitT.getInstance();
+	}
+
+	public Type visit(EvalExp e, Env<Type> env) {
+		return UnitT.getInstance();
 	}
 }
