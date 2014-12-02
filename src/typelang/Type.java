@@ -8,13 +8,10 @@ public interface Type {
 
 	static class ErrorT implements Type {
 		String _message;
-
 		public ErrorT(String message) { _message = message; }
-		
 	    public String tostring() {
-	    	return "error because " + _message;
+	    	return "Type error: " + _message;
 	    }
-
 		public boolean typeEqual(Type other) { return other == this; }
 	}
 
@@ -22,7 +19,6 @@ public interface Type {
 		private static final UnitT _instance = new UnitT();
 		public static UnitT getInstance() { return _instance; }
 	    public String tostring() { return "unit"; }
-
 	    public boolean typeEqual(Type other) { return other == this; }
 	}
 
@@ -30,7 +26,6 @@ public interface Type {
 		private static final BoolT _instance = new BoolT();
 		public static BoolT getInstance() { return _instance; }
 	    public String tostring() { return "bool"; }
-
 	    public boolean typeEqual(Type other) { return other == this; }
 	}
 
@@ -38,7 +33,6 @@ public interface Type {
 		private static final StringT _instance = new StringT();
 		public static StringT getInstance() { return _instance; }
 	    public String tostring() { return "string"; }
-
 	    public boolean typeEqual(Type other) { return other == this; }
 	}
 
@@ -46,7 +40,6 @@ public interface Type {
 		private static final NumT _instance = new NumT();
 		public static NumT getInstance() { return _instance; }
 	    public String tostring() { return "number"; }
-
 	    public boolean typeEqual(Type other) { return other == this; }
 	}
 
@@ -59,7 +52,6 @@ public interface Type {
 	    public java.lang.String tostring() { 
 	    	return "(" + _fst.tostring() + " " + _snd.tostring() + ")"; 
 	    }
-
 	    public boolean typeEqual(Type other) {
 	    	if (other instanceof PairT) {
 	    		PairT pt = (PairT)other;
@@ -76,11 +68,9 @@ public interface Type {
 
 	    	_snd = this;
 	    }
-
 	    public java.lang.String tostring() { 
 	    	return "List<" + _fst.tostring() + ">"; 
 	    }
-
 	    public boolean typeEqual(Type other) {
 	    	if (other instanceof ListT) {
 	    		ListT lt = (ListT)other;
@@ -98,11 +88,8 @@ public interface Type {
 	    	_argTypes = argTypes;
 	    	_returnType = returnType;
 	    }
-
 		public List<Type> argTypes() { return _argTypes; }
-
 		public Type returnType() { return _returnType; }
-
 	    public java.lang.String tostring() {
 	    	StringBuffer sb = new StringBuffer();
 	    	int size = _argTypes.size();
@@ -117,7 +104,6 @@ public interface Type {
 	    	sb.append(_returnType.tostring());
 	    	return sb.toString(); 
 	    }
-
 		public boolean typeEqual(Type other) {
 	    	if (other instanceof FuncT) {
 	    		FuncT ft = (FuncT)other;
@@ -141,14 +127,10 @@ public interface Type {
 	static class RefT implements Type {
 		protected Type _nestType;
 	    public RefT(Type nestType) { _nestType = nestType; }
-
 		public Type nestType() { return _nestType; }
-
 	    public java.lang.String tostring() {
-	    	
 	    	return "Ref " + _nestType.tostring(); 
 	    }
-
 		public boolean typeEqual(Type other) {
 			if (other instanceof RefT) {
 				RefT rt = (RefT)other;
