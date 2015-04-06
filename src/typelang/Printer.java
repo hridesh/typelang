@@ -198,30 +198,30 @@ public class Printer {
 			result += e.body().accept(this, env) + " ";
 			return result + ")";
 		}
-        
-                public String visit(AST.RefExp e, Env<Void> env) {
-                        String result = "(ref ";
-                        result += e.value_exp().accept(this, env);
-                        return result + ")";
-                }
-        
-                public String visit(AST.DerefExp e, Env<Void> env) {
-                        String result = "(deref ";
-                        result += e.loc_exp().accept(this, env);
-                        return result + ")";
-                }
-        
-                public String visit(AST.AssignExp e, Env<Void> env) {
-                        String result = "(set! ";
-                        result += e.lhs_exp().accept(this, env) + " ";
-                        result += e.rhs_exp().accept(this, env);
-                        return result + ")";
-                }
-                
-                public String visit(AST.FreeExp e, Env<Void> env) {
-                    String result = "(free ";
-                    result += e.value_exp().accept(this, env);
-                    return result + ")";
-                }
+
+		public String visit(AST.RefExp e, Env<Void> env) {
+			String result = "(ref ";
+			result += e.value_exp().accept(this, env);
+			return result + ")";
+		}
+
+		public String visit(AST.DerefExp e, Env<Void> env) {
+			String result = "(deref ";
+			result += e.loc_exp().accept(this, env);
+			return result + ")";
+		}
+
+		public String visit(AST.AssignExp e, Env<Void> env) {
+			String result = "(set! ";
+			result += e.lhs_exp().accept(this, env) + " ";
+			result += e.rhs_exp().accept(this, env);
+			return result + ")";
+		}
+
+		public String visit(AST.FreeExp e, Env<Void> env) {
+			String result = "(free ";
+			result += e.value_exp().accept(this, env);
+			return result + ")";
+		}
 	}
 }

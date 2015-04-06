@@ -28,12 +28,12 @@ public class Reader {
 	private static final int 
 	program = 0, definedecl = 1, exp = 2, varexp = 3, numexp = 4, strconst = 5,
 	boolconst = 6, addexp = 7, subexp = 8, multexp = 9, divexp = 10,
-	letexp = 11, // New expression for the varlang language.
-	lambdaexp = 12, callexp = 13, // New expressions for this language.
-	ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
+	letexp = 11, 
+	lambdaexp = 12, callexp = 13, 
+	ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, 
 	carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22,
-	letrecexp = 23, // New expression for the letrec language.
-	refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27, // New expression for the typelang language.
+	letrecexp = 23,
+	refexp = 24, derefexp = 25, assignexp = 26, freeexp = 27, 
 	type = 28, booltype = 29, funtype = 30, numtype = 31, listtype = 32,
 	pairtype = 33, reftype = 34, stringtype = 35, unittype = 36
 	;

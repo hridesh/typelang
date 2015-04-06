@@ -25,17 +25,21 @@ public class Interpreter {
 		Checker checker = new Checker(); // Type checker
 		try {
 			while (true) { // Read-Eval-Print-Loop (also known as REPL)
-				Program p = reader.read();
-				Type t = checker.check(p); // Type checking the program
-				if(t instanceof Type.ErrorT)
-					printer.print(t);
-				else {
-					try {
-						Value val = eval.valueOf(p);
-						printer.print(val);
-					} catch (Env.LookupException e) {
-						printer.print(e);
+				try {
+					Program p = reader.read();
+					Type t = checker.check(p); /*** Type checking the program ***/
+					if(t instanceof Type.ErrorT)
+						printer.print(t);
+					else {
+						try {
+							Value val = eval.valueOf(p);
+							printer.print(val);
+						} catch (Env.LookupException e) {
+							printer.print(e);
+						}
 					}
+				} catch (NullPointerException e){
+					System.out.println(e.toString());
 				}
 			}
 		} catch (IOException e) {

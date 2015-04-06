@@ -6,7 +6,7 @@ import typelang.AST.Exp;
 
 public interface Value {
 	public String tostring();
-    static class RefVal implements Value { //New in the typelang
+    static class RefVal implements Value {
     	private int _loc = -1; 
         public RefVal(int loc) { _loc = loc; }
         public String tostring() {
@@ -14,7 +14,7 @@ public interface Value {
         }
         public int loc() { return _loc; }
     }
-	static class FunVal implements Value { //New in the funclang
+	static class FunVal implements Value {
 		private Env<Value> _env;
 		private List<String> _formals;
 		private Exp _body;

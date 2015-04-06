@@ -49,7 +49,6 @@ public interface Heap {
 		public Value free (Value.RefVal loc) {
 			try {
 				_rep[loc.loc()] = null;
-				//REMARK: students should add this location to free list.
 				return loc;
 			} catch (ArrayIndexOutOfBoundsException e) {
 				return new Value.DynamicError("Segmentation fault at access " + loc);

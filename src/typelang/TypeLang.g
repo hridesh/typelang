@@ -1,4 +1,4 @@
-grammar RecLang;
+grammar TypeLang;
  
  // Grammar of this Programming Language
  //  - grammar rules start with lowercase
@@ -36,10 +36,10 @@ grammar RecLang;
         | listexp
         | nullexp
         | letrecexp
-        | refexp //New for typelang
-        | derefexp //New for typelang
-        | assignexp //New for typelang
-        | freeexp //New for typelang
+        | refexp 
+        | derefexp 
+        | assignexp 
+        | freeexp
         ;
  
  varexp  : 
