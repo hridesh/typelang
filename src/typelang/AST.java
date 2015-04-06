@@ -748,25 +748,25 @@ public interface AST {
 		public T visit(AST.Program p, U env);
 		public T visit(AST.SubExp e, U env);
 		public T visit(AST.VarExp e, U env);
-		public T visit(AST.LetExp e, U env); // New for the varlang
-		public T visit(AST.DefineDecl d, U env); // New for the definelang
-		public T visit(AST.ReadExp e, U env); // New for the funclang
-		public T visit(AST.EvalExp e, U env); // New for the funclang
-		public T visit(AST.LambdaExp e, U env); // New for the funclang
-		public T visit(AST.CallExp e, U env); // New for the funclang
-		public T visit(AST.LetrecExp e, U env); // New for the funclang
-		public T visit(AST.IfExp e, U env); // Additional expressions for convenience
-		public T visit(AST.LessExp e, U env); // Additional expressions for convenience
-		public T visit(AST.EqualExp e, U env); // Additional expressions for convenience
-		public T visit(AST.GreaterExp e, U env); // Additional expressions for convenience
-		public T visit(AST.CarExp e, U env); // Additional expressions for convenience
-		public T visit(AST.CdrExp e, U env); // Additional expressions for convenience
-		public T visit(AST.ConsExp e, U env); // Additional expressions for convenience
-		public T visit(AST.ListExp e, U env); // Additional expressions for convenience
-		public T visit(AST.NullExp e, U env); // Additional expressions for convenience
-		public T visit(AST.RefExp e, U env); // New for the Reflang
-		public T visit(AST.DerefExp e, U env); // New for the Reflang
-		public T visit(AST.AssignExp e, U env); // New for the Reflang
-		public T visit(AST.FreeExp e, U env); // New for the Reflang
+		public T visit(AST.LetExp e, U env);
+		public T visit(AST.DefineDecl d, U env);
+		public T visit(AST.ReadExp e, U env);
+		public T visit(AST.EvalExp e, U env);
+		public T visit(AST.LambdaExp e, U env);
+		public T visit(AST.CallExp e, U env);
+		public T visit(AST.LetrecExp e, U env);
+		public T visit(AST.IfExp e, U env);
+		public T visit(AST.LessExp e, U env);
+		public T visit(AST.EqualExp e, U env);
+		public T visit(AST.GreaterExp e, U env);
+		public T visit(AST.CarExp e, U env);
+		public T visit(AST.CdrExp e, U env);
+		public T visit(AST.ConsExp e, U env);
+		public T visit(AST.ListExp e, U env);
+		public T visit(AST.NullExp e, U env);
+		public T visit(AST.RefExp e, U env);
+		public T visit(AST.DerefExp e, U env);
+		public T visit(AST.AssignExp e, U env);
+		public T visit(AST.FreeExp e, U env);
 	}	
 }
