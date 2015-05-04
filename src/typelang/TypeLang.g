@@ -177,29 +177,29 @@ grammar TypeLang;
 
 // ******************* New Expressions for RefLang **********************
  refexp  :
-                '(' Ref ':' type
-                    exp
-                    ')'
-                ;
+        '(' Ref ':' type
+            exp
+            ')'
+        ;
 
  derefexp  :
-                '(' Deref
-                    exp
-                    ')'
-                ;
+        '(' Deref
+            exp
+            ')'
+        ;
 
  assignexp  :
-                '(' Assign
-                    exp
-                    exp
-                    ')'
-                ;
+        '(' Assign
+            exp
+            exp
+            ')'
+        ;
 
  freeexp  :
-                '(' Free
-                    exp
-                    ')'
-                ;
+        '(' Free
+            exp
+            ')'
+        ;
 
 // ******************* Type Expressions for TypeLang **********************
 type :
