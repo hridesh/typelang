@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<project name="lang" default="parser">
+
+	<!-- ANTLR version -->
+	<property name="antlr.version" value="4.5" />
+
+	<!-- TypeLang parser -->
+	<target name="typelang-check-parser">
+		<condition property="typelang.parser.uptodate">
+			<and>
+				<uptodate srcfile="src/typelang/TypeLang.g" targetfile="src/typelang/parser/TypeLangParser.java" />
+				<uptodate srcfile="src/typelang/TypeLang.g" targetfile="src/typelang/parser/TypeLangLexer.java" />
+				<uptodate srcfile="src/typelang/TypeLang.g" targetfile="src/typelang/parser/TypeLangListener.java" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="typelang" depends="typelang-check-parser" unless="typelang.parser.uptodate">
+		<java jar="lib/antlr-${antlr.version}-complete.jar" dir="src/typelang/" fork="true" failonerror="true">
+			<arg value="-o" />
+			<arg value="parser/" />
+			<arg value="-no-listener" />
+			<arg value="-package" />
+			<arg value="typelang.parser; import static typelang.AST.*" />
+			<arg value="TypeLang.g" />
+		</java>
+	</target>
+
+	<target name="parser" depends="typelang" >
+	</target>
+	
+</project>
