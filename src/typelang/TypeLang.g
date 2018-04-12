@@ -12,7 +12,7 @@ grammar TypeLang;
  			id=Identifier
  			':' t=type
  			e=exp
- 		')' { $ast = new DefineDecl($id.text, $t.type, $e.ast); }
+ 		')' { $ast = new DefineDecl($id.text, $t.ty, $e.ast); }
  		;
 
  exp returns [Exp ast]: 
@@ -76,7 +76,7 @@ numtype returns [NumT ty] :
 		Num { $ty = NumT.getInstance(); }
 		;
 
-listtype :
+listtype returns [ListT ty] :
  		ListT '<' ty1=type '>' { $ty = new ListT($ty1.ty); }
  		;
 
@@ -107,20 +107,6 @@ unittype returns [UnitT ty] :
  		| FalseLiteral
  		;
   
- letexp  :
- 		'(' Let
- 			'(' ( '(' Identifier ':' type exp ')' )+  ')'
- 			exp 
- 			')' 
- 		;
-
- lambdaexp :
- 		'(' Lambda 
- 			'(' Identifier* ':' type ')'
- 			exp 
- 			')' 
- 		;
-
  letrecexp returns [LetrecExp ast] 
         locals [ArrayList<String> ids = new ArrayList<String>(), ArrayList<Exp> funs = new ArrayList<Exp>(); ] :
  		'(' Letrec 
@@ -347,10 +333,10 @@ unittype returns [UnitT ty] :
  		;
 
  letexp  returns [LetExp ast] 
-        locals [ArrayList<String> names, ArrayList<Exp> value_exps]
- 		@init { $names = new ArrayList<String>(); $value_exps = new ArrayList<Exp>(); } :
+        locals [ArrayList<String> names, ArrayList<Types> types, ArrayList<Exp> value_exps]
+ 		@init { $names = new ArrayList<String>(); $types = new ArrayList<Type>(); $value_exps = new ArrayList<Exp>(); } :
  		'(' Let 
- 			'(' ( '(' id=Identifier e=exp ')' { $names.add($id.text); $value_exps.add($e.ast); } )+  ')'
+ 			'(' ( '(' id=Identifier ':' ty1=type e=exp ')' { $names.add($id.text); $types.add($ty1.ty); $value_exps.add($e.ast); } )+  ')'
  			body=exp 
  			')' { $ast = new LetExp($names, $value_exps, $body.ast); }
  		;
