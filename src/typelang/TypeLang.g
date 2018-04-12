@@ -7,14 +7,6 @@ grammar TypeLang;
 		{ $ast = new Program($defs, $expr); }
 		;
 
-// definedecl  :                
-// 		'(' Define 
-// 			Identifier
-// 			':' type
-// 			exp
-// 			')' 
-// 		;
-
  definedecl returns [DefineDecl ast] :
  		'(' Define 
  			id=Identifier
@@ -129,12 +121,6 @@ unittype returns [UnitT ty] :
  			')' 
  		;
 
- listexp :
- 		'(' List ':' type
- 		    exp* 
- 			')' 
- 		;
-
  letrecexp returns [LetrecExp ast] 
         locals [ArrayList<String> ids = new ArrayList<String>(), ArrayList<Exp> funs = new ArrayList<Exp>(); ] :
  		'(' Letrec 
@@ -145,9 +131,9 @@ unittype returns [UnitT ty] :
 
 // ******************* New Expressions for RefLang **********************
  refexp returns [RefExp ast] :
-        '(' Ref ':' type
+        '(' Ref ':' ty1=type
             e=exp
-        ')' { $ast = new RefExp($e.ast); }
+        ')' { $ast = new RefExp($e.ast, $ty1.ty); }
         ;
         
  derefexp returns [DerefExp ast] :
@@ -173,12 +159,12 @@ unittype returns [UnitT ty] :
 // New Expressions for FuncLang
 
  lambdaexp returns [LambdaExp ast] 
-        locals [ArrayList<String> formals ]
+        locals [ArrayList<String> formals, ArrayList<Type> types ]
  		@init { $formals = new ArrayList<String>(); } :
  		'(' Lambda 
- 			'(' (id=Identifier { $formals.add($id.text); } )* ')'
+ 			'(' (id=Identifier ':' ty1=type { $formals.add($id.text); $types.add($ty1.ty); } )* ')'
  			body=exp 
- 		')' { $ast = new LambdaExp($formals, $body.ast); }
+ 		')' { $ast = new LambdaExp($formals, $types, $body.ast); }
  		;
 
  callexp returns [CallExp ast] 
@@ -291,9 +277,9 @@ unittype returns [UnitT ty] :
  listexp returns [ListExp ast] 
         locals [ArrayList<Exp> list]
  		@init { $list = new ArrayList<Exp>(); } :
- 		'(' List 
+ 		'(' List ':' ty=type
  		    ( e=exp { $list.add($e.ast); } )* 
- 		')' { $ast = new ListExp($list); }
+ 		')' { $ast = new ListExp($ty.ty,$list); }
  		;
 
  nullexp returns [NullExp ast] :
