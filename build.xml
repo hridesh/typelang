@@ -21,7 +21,7 @@
 			<arg value="parser/" />
 			<arg value="-no-listener" />
 			<arg value="-package" />
-			<arg value="typelang.parser; import static typelang.AST.*" />
+			<arg value="typelang.parser; import static typelang.AST.*; import static typelang.Type.*; import java.util.ArrayList; " />
 			<arg value="TypeLang.g" />
 		</java>
 	</target>
