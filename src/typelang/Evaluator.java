@@ -4,8 +4,10 @@ import static typelang.Heap.*;
 import static typelang.Value.*;
 
 import java.util.List;
+
 import java.util.ArrayList;
 import java.io.File;
+import java.io.IOException;
 
 import typelang.Env.*;
 
@@ -34,22 +36,22 @@ public class Evaluator implements Visitor<Value,Env<Value>> {
 	}
 	
 	@Override
-	public Value visit(Unit e, Env<Value> env) {
+	public Value visit(UnitExp e, Env<Value> env) {
 		return new UnitVal();
 	}
 
 	@Override
-	public Value visit(Const e, Env<Value> env) {
+	public Value visit(NumExp e, Env<Value> env) {
 		return new NumVal(e.v());
 	}
 
 	@Override
-	public Value visit(StrConst e, Env<Value> env) {
+	public Value visit(StrExp e, Env<Value> env) {
 		return new StringVal(e.v());
 	}
 
 	@Override
-	public Value visit(BoolConst e, Env<Value> env) {
+	public Value visit(BoolExp e, Env<Value> env) {
 		return new BoolVal(e.v());
 	}
 
@@ -282,8 +284,12 @@ public class Evaluator implements Visitor<Value,Env<Value>> {
 
 	public Value visit(ReadExp e, Env<Value> env) {
 		StringVal fileName = (StringVal) e.file().accept(this, env);
-		String text = Reader.readFile("" + System.getProperty("user.dir") + File.separator + fileName.v());
-		return new StringVal(text);
+		try {
+			String text = Reader.readFile("" + System.getProperty("user.dir") + File.separator + fileName.v());
+			return new StringVal(text);
+		} catch (IOException ex) {
+			return new DynamicError(ex.getMessage());
+		}
 	}
 	
 	@Override
