@@ -151,7 +151,7 @@ unittype returns [UnitT ty] :
 // New Expressions for FuncLang
 
  lambdaexp returns [LambdaExp ast] 
-        locals [ArrayList<String> formals, ArrayList<Type> types ]
+        locals [ArrayList<String> formals, ArrayList<Type> types = new ArrayList<Type>() ]
  		@init { $formals = new ArrayList<String>(); } :
  		'(' Lambda 
  			'(' (id=Identifier ':' ty1=type { $formals.add($id.text); $types.add($ty1.ty); } )* ')'
