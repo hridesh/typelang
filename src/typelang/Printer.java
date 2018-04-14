@@ -26,19 +26,19 @@ public class Printer {
 			return result + ")";
 		}
 		
-		public String visit(AST.Unit e, Env<Void> env) {
+		public String visit(AST.UnitExp e, Env<Void> env) {
 			return "unit";
 		}
 
-		public String visit(AST.Const e, Env<Void> env) {
+		public String visit(AST.NumExp e, Env<Void> env) {
 			return "" + e.v();
 		}
 		
-		public String visit(AST.StrConst e, Env<Void> env) {
+		public String visit(AST.StrExp e, Env<Void> env) {
 			return e.v();
 		}
 		
-		public String visit(AST.BoolConst e, Env<Void> env) {
+		public String visit(AST.BoolExp e, Env<Void> env) {
 			if(e.v()) return "#t";
 			return "#f";
 		}
@@ -198,6 +198,62 @@ public class Printer {
 			result += e.body().accept(this, env) + " ";
 			return result + ")";
 		}
+		
+	        @Override
+	        public String visit(AST.IsListExp e, Env<Void> env) {
+	                String result = "(list? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsPairExp e, Env<Void> env) {
+	                String result = "(pair? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsUnitExp e, Env<Void> env) {
+	                String result = "(unit? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsProcedureExp e, Env<Void> env) {
+	                String result = "(procedure? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsStringExp e, Env<Void> env) {
+	                String result = "(string? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsNumberExp e, Env<Void> env) {
+	                String result = "(number? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsBooleanExp e, Env<Void> env) {
+	                String result = "(boolean? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
+
+	        @Override
+	        public String visit(AST.IsNullExp e, Env<Void> env) {
+	                String result = "(null? ";
+	                result += e.exp().accept(this, env);
+	                return result + ")";
+	        }
 
 		public String visit(AST.RefExp e, Env<Void> env) {
 			String result = "(ref ";
