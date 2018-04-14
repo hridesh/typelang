@@ -1,1 +1,7 @@
-((lambda (x y z : (num num num -> num)) (+ x (+ y z))) 1 2 3)
+(
+	(lambda 
+		(x : num y : num z : num) 
+		(+ x (+ y z))
+	) 
+	1 2 3
+)
