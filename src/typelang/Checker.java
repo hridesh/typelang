@@ -29,7 +29,7 @@ public class Checker implements Visitor<Type, Env<Type>> {
 	    Type dType = d.type();
 
 	    if (!type.typeEqual(dType)) {
-		return new ErrorT("Expected " + dType + " found " + type
+		return new ErrorT("Expected " + dType.tostring() + " found " + type.tostring()
 			+ " in " + ts.visit(d, null));
 	    }
 
