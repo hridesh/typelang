@@ -335,7 +335,7 @@ public interface AST {
 
 	public List<String> formals() { return _formals; }
 
-	public List<Type> type() { return _types; }
+	public List<Type> formal_types() { return _types; }
 
 	public Exp body() { return _body; }
 
