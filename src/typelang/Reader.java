@@ -38,7 +38,7 @@ public class Reader {
     }
 
     protected String getProgramDirectory() {
-	return "build" + File.separator + "reflang" + File.separator
+	return "build" + File.separator + "typelang" + File.separator
 		+ "examples" + File.separator;
     }
 
