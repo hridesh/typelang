@@ -31,8 +31,12 @@ public class Interpreter {
 			p = reader.read();
 			if(p._e == null) continue REPL;
 			Type t = checker.check(p); /*** Type checking the program ***/
-			Value val = eval.valueOf(p);
-			printer.print(val);
+		    if (t instanceof Type.ErrorT)
+ 				printer.print(t);
+ 		    else {
+				Value val = eval.valueOf(p);
+				printer.print(val);
+			}
 		} catch (Env.LookupException e) {
 			printer.print(e);
 		} catch (IOException e) {

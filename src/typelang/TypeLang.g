@@ -72,10 +72,13 @@ booltype returns [BoolT ty] :
 		Bool { $ty = Type.BoolT.getInstance(); } 
 		;
 
-funtype returns [FuncT ty] :
+funtype returns [FuncT ty]
+        locals [ArrayList<Type> argtypes = new ArrayList<Type>();  ] :
  		'(' 
- 			type* '->' type 
- 		')' {}
+ 			( ty1=type {  $argtypes.add($ty1.ty); } )* 
+ 			'->' 
+ 			ty2=type 
+ 		')' { $ty = new FuncT($argtypes, $ty2.ty); }
  		;
 
 numtype returns [NumT ty] : 
