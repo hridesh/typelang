@@ -5,14 +5,17 @@ import java.util.List;
 import typelang.AST.Exp;
 
 public class Printer {
+    
     public void print(Value v) {
 	if(v.tostring() != "")
 	    System.out.println(v.tostring());
     }
+    
     public void print(Type t) {
 	if(t.tostring() != "")
 	    System.out.println(t.tostring());
     }
+    
     public void print(Exception e) {
 	System.out.println(e.toString());
     }
