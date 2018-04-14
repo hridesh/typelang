@@ -1,5 +1,11 @@
 grammar TypeLang;
- 
+ @header {
+  package typelang.parser; 
+  import static typelang.AST.*; 
+  import typelang.Type; 
+  import static typelang.Type.*; 
+  import java.util.ArrayList; 
+ }
  program returns [Program ast]        
  		locals [ArrayList<DefineDecl> defs, Exp expr]
  		@init { $defs = new ArrayList<DefineDecl>(); $expr = new UnitExp(); } :
@@ -63,7 +69,7 @@ type returns [Type ty]:
         ;
 
 booltype returns [BoolT ty] : 
-		Bool { $ty = BoolT.getInstance(); } 
+		Bool { $ty = Type.BoolT.getInstance(); } 
 		;
 
 funtype returns [FuncT ty] :
@@ -73,7 +79,7 @@ funtype returns [FuncT ty] :
  		;
 
 numtype returns [NumT ty] : 
-		Num { $ty = NumT.getInstance(); }
+		Num { $ty = Type.NumT.getInstance(); }
 		;
 
 listtype returns [ListT ty] :
@@ -91,11 +97,11 @@ reftype returns [RefT ty] :
         ;
 
 stringtype returns [StringT ty] : 
-		StringT { $ty = StringT.getInstance(); }
+		StringT { $ty = Type.StringT.getInstance(); }
 		;
 
 unittype returns [UnitT ty] : 
-		UnitT { $ty = UnitT.getInstance(); }
+		UnitT { $ty = Type.UnitT.getInstance(); }
 		;
  
  strconst :
@@ -108,11 +114,11 @@ unittype returns [UnitT ty] :
  		;
   
  letrecexp returns [LetrecExp ast] 
-        locals [ArrayList<String> ids = new ArrayList<String>(), ArrayList<Exp> funs = new ArrayList<Exp>(); ] :
+        locals [ArrayList<String> ids = new ArrayList<String>(), ArrayList<Type> types = new ArrayList<Type>(), ArrayList<Exp> funs = new ArrayList<Exp>(); ] :
  		'(' Letrec 
- 			'(' ( '(' id=Identifier fun=exp ')' { $ids.add($id.text); $funs.add($fun.ast); } )+  ')'
+ 			'(' ( '(' id=Identifier ':' ty1=type fun=exp ')' { $ids.add($id.text); $funs.add($fun.ast); } )+  ')'
  			body=exp 
- 		')' { $ast = new LetrecExp($ids, $funs, $body.ast); }
+ 		')' { $ast = new LetrecExp($ids, $types, $funs, $body.ast); }
  		;
 
 // ******************* New Expressions for RefLang **********************
@@ -333,12 +339,12 @@ unittype returns [UnitT ty] :
  		;
 
  letexp  returns [LetExp ast] 
-        locals [ArrayList<String> names, ArrayList<Types> types, ArrayList<Exp> value_exps]
+        locals [ArrayList<String> names, ArrayList<Type> types, ArrayList<Exp> value_exps]
  		@init { $names = new ArrayList<String>(); $types = new ArrayList<Type>(); $value_exps = new ArrayList<Exp>(); } :
  		'(' Let 
  			'(' ( '(' id=Identifier ':' ty1=type e=exp ')' { $names.add($id.text); $types.add($ty1.ty); $value_exps.add($e.ast); } )+  ')'
  			body=exp 
- 			')' { $ast = new LetExp($names, $value_exps, $body.ast); }
+ 			')' { $ast = new LetExp($names, $types, $value_exps, $body.ast); }
  		;
 
  // Lexical Specification of this Programming Language
