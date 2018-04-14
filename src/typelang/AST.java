@@ -835,7 +835,7 @@ public interface AST {
 	    return visitor.visit(this, env);
 	}
     }    
-    
+
     public static class ErrorExp extends Exp {
 	public Object accept(Visitor visitor, Object env) {
 	    return visitor.visit(this, env);
@@ -871,14 +871,14 @@ public interface AST {
 	public T visit(AST.ConsExp e, U env);
 	public T visit(AST.ListExp e, U env);
 	public T visit(AST.NullExp e, U env);
-        public T visit(AST.IsNullExp e, U env); 
-        public T visit(AST.IsProcedureExp e, U env); 
-        public T visit(AST.IsListExp e, U env); 
-        public T visit(AST.IsPairExp e, U env); 
-        public T visit(AST.IsUnitExp e, U env); 
-        public T visit(AST.IsNumberExp e, U env); 
-        public T visit(AST.IsStringExp e, U env); 
-        public T visit(AST.IsBooleanExp e, U env); 	
+	public T visit(AST.IsNullExp e, U env); 
+	public T visit(AST.IsProcedureExp e, U env); 
+	public T visit(AST.IsListExp e, U env); 
+	public T visit(AST.IsPairExp e, U env); 
+	public T visit(AST.IsUnitExp e, U env); 
+	public T visit(AST.IsNumberExp e, U env); 
+	public T visit(AST.IsStringExp e, U env); 
+	public T visit(AST.IsBooleanExp e, U env); 	
 	public T visit(AST.RefExp e, U env);
 	public T visit(AST.DerefExp e, U env);
 	public T visit(AST.AssignExp e, U env);
