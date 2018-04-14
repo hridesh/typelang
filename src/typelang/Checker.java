@@ -85,39 +85,33 @@ public class Checker implements Visitor<Type, Env<Type>> {
 
     public Type visit(LambdaExp e, Env<Type> env) {
 	List<String> names = e.formals();
-	Type type = e.type();
+	List<Type> types = e.formal_types();
 
 	String message = "The declared type of a lambda expression should be "
 		+ "of function type in ";
-	if (type instanceof FuncT) {
-	    FuncT ft = (FuncT) type;
-
-	    List<Type> types = ft.argTypes();
-
-	    message = "The number of formal parameters and the number of "
-		    + "arguments in the function type do not match in ";
-	    if (types.size() == names.size()) {
-		Env<Type> new_env = env;
-		int index = 0;
-		for (Type argType : types) {
-		    new_env = new ExtendEnv<Type>(new_env, names.get(index),
-			    argType);
-		    index++;
-		}
-
-		Type bodyType = (Type) e.body().accept(this, new_env);
-
-		if (bodyType instanceof ErrorT) {
-		    return bodyType;
-		}
-
-		message = "The declared return type and the actual return type "
-			+ "mismatch, expect " + type.tostring() + ", but found "
-			+ bodyType.tostring();
-		if (bodyType.typeEqual(ft.returnType())) {
-		    return ft;
-		}
+	
+	//FuncT ft = (FuncT) type;
+	message = "The number of formal parameters and the number of "
+		+ "arguments in the function type do not match in ";
+	if (types.size() == names.size()) {
+	    Env<Type> new_env = env;
+	    int index = 0;
+	    for (Type argType : types) {
+		new_env = new ExtendEnv<Type>(new_env, names.get(index),
+			argType);
+		index++;
 	    }
+
+	    Type bodyType = (Type) e.body().accept(this, new_env);
+
+	    if (bodyType instanceof ErrorT) {
+		return bodyType;
+	    }
+
+	    //create a new function type with arguments, and the type of 
+	    //the body as the return type. Notice, that the body type isn't 
+	    //given in any type annotation, but being computed here.
+	    return new FuncT(types,bodyType);	    
 	}
 
 	return new ErrorT(message + ts.visit(e, null));
@@ -509,49 +503,73 @@ public class Checker implements Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(IsNullExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsProcedureExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsListExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsPairExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsUnitExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsNumberExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsStringExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 
     @Override
     public Type visit(IsBooleanExp e, Env<Type> env) {
-	// TODO Auto-generated method stub
-	return null;
+	Type exp_type = (Type) e.exp().accept(this, env);
+	if (exp_type instanceof ErrorT) {
+	    return exp_type;
+	}
+	return BoolT.getInstance();
     }
 }
