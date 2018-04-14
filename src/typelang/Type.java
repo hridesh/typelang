@@ -63,7 +63,7 @@ public interface Type {
 	}
 
 	public String tostring() {
-	    return "string";
+	    return "String";
 	}
 
 	public boolean typeEqual(Type other) {
@@ -79,7 +79,7 @@ public interface Type {
 	}
 
 	public String tostring() {
-	    return "number";
+	    return "num";
 	}
 
 	public boolean typeEqual(Type other) {
@@ -160,6 +160,7 @@ public interface Type {
 	    StringBuffer sb = new StringBuffer();
 	    int size = _argTypes.size();
 	    int i = 0;
+	    sb.append("(");
 	    for (Type type : _argTypes) {
 		sb.append(type.tostring());
 		if (i != size - 1) {
@@ -170,6 +171,7 @@ public interface Type {
 	    }
 	    sb.append(" -> ");
 	    sb.append(_returnType.tostring());
+	    sb.append(")");
 	    return sb.toString();
 	}
 
