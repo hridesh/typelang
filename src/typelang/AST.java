@@ -56,8 +56,9 @@ public interface AST {
 	}
     }
 
-    public static class Unit extends Exp {
-	public Unit() {}
+    public static class UnitExp extends Exp {
+
+	public UnitExp() {}
 
 	public Object accept(Visitor visitor, Object env) {
 	    return visitor.visit(this, env);
@@ -65,10 +66,10 @@ public interface AST {
 
     }
 
-    public static class Const extends Exp {
+    public static class NumExp extends Exp {
 	double _val;
 
-	public Const(double v) {
+	public NumExp(double v) {
 	    _val = v;
 	}
 
@@ -81,10 +82,10 @@ public interface AST {
 	}
     }
 
-    public static class StrConst extends Exp {
+    public static class StrExp extends Exp {
 	String _val;
 
-	public StrConst(String v) {
+	public StrExp(String v) {
 	    _val = v;
 	}
 
@@ -97,10 +98,10 @@ public interface AST {
 	}
     }
 
-    public static class BoolConst extends Exp {
+    public static class BoolExp extends Exp {
 	boolean _val;
 
-	public BoolConst(boolean v) {
+	public BoolExp(boolean v) {
 	    _val = v;
 	}
 
@@ -729,6 +730,112 @@ public interface AST {
 
     }
 
+
+    public static class IsBooleanExp extends Exp {
+	private Exp e;
+	public IsBooleanExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsNumberExp extends Exp {
+	private Exp e;
+	public IsNumberExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsStringExp extends Exp {
+	private Exp e;
+	public IsStringExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsProcedureExp extends Exp {
+	private Exp e;
+	public IsProcedureExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsUnitExp extends Exp {
+	private Exp e;
+	public IsUnitExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsPairExp extends Exp {
+	private Exp e;
+	public IsPairExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsListExp extends Exp {
+	private Exp e;
+	public IsListExp(Exp e){
+	    this.e=e;
+	}
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }
+
+    public static class IsNullExp extends Exp {
+	private Exp e;
+	public IsNullExp(Exp e){
+	    this.e=e;
+	}
+
+	Exp exp(){
+	    return this.e;
+	}
+	public Object accept(Visitor visitor, Object env) {
+	    return visitor.visit(this, env);
+	}
+    }    
+    
     public static class ErrorExp extends Exp {
 	public Object accept(Visitor visitor, Object env) {
 	    return visitor.visit(this, env);
@@ -738,10 +845,10 @@ public interface AST {
     public interface Visitor <T,U> {
 	// This interface should contain a signature for each concrete AST node.
 	public T visit(AST.AddExp e, U env);
-	public T visit(AST.Unit e, U env);
-	public T visit(AST.Const e, U env);
-	public T visit(AST.StrConst e, U env);
-	public T visit(AST.BoolConst e, U env);
+	public T visit(AST.UnitExp e, U env);
+	public T visit(AST.NumExp e, U env);
+	public T visit(AST.StrExp e, U env);
+	public T visit(AST.BoolExp e, U env);
 	public T visit(AST.DivExp e, U env);
 	public T visit(AST.ErrorExp e, U env);
 	public T visit(AST.MultExp e, U env);
@@ -764,6 +871,14 @@ public interface AST {
 	public T visit(AST.ConsExp e, U env);
 	public T visit(AST.ListExp e, U env);
 	public T visit(AST.NullExp e, U env);
+        public T visit(AST.IsNullExp e, U env); 
+        public T visit(AST.IsProcedureExp e, U env); 
+        public T visit(AST.IsListExp e, U env); 
+        public T visit(AST.IsPairExp e, U env); 
+        public T visit(AST.IsUnitExp e, U env); 
+        public T visit(AST.IsNumberExp e, U env); 
+        public T visit(AST.IsStringExp e, U env); 
+        public T visit(AST.IsBooleanExp e, U env); 	
 	public T visit(AST.RefExp e, U env);
 	public T visit(AST.DerefExp e, U env);
 	public T visit(AST.AssignExp e, U env);
