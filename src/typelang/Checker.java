@@ -1,5 +1,6 @@
 package typelang;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -571,5 +572,35 @@ public class Checker implements Visitor<Type, Env<Type>> {
 	    return exp_type;
 	}
 	return BoolT.getInstance();
+    }
+    
+    public static void main(String[] args) {
+	System.out.println(
+		"TypeLang: Type a program to check and press the enter key,\n"
+			+ "e.g. ((lambda (x: num y: num z : num) (+ x (+ y z))) 1 2 3) \n"
+			+ "or try (let ((x : num 2)) x) \n"
+			+ "or try (car (list : num  1 2 8)) \n"
+			+ "or try (ref : num 2) \n"
+			+ "or try  (let ((a : Ref num (ref : num 2))) (set! a (deref a))) \n"
+			+ "Press Ctrl + C to exit.");
+	Reader reader = new Reader();
+	Printer printer = new Printer();
+	Checker checker = new Checker(); // Type checker
+	REPL: while (true) { // Read-Eval-Print-Loop (also known as REPL)
+		Program p = null;
+		try {
+			p = reader.read();
+			if(p._e == null) continue REPL;
+			Type t = checker.check(p); /*** Type checking the program ***/
+ 			printer.print(t);
+		} catch (Env.LookupException e) {
+			printer.print(e);
+		} catch (IOException e) {
+			System.out.println("Error reading input:" + e.getMessage());
+		} catch (NullPointerException e) {
+			System.out.println("Error:" + e.getMessage());
+		}
+	}
+	
     }
 }
