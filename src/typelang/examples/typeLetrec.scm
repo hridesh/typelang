@@ -1,12 +1,12 @@
 (letrec 
 	(
 		(isEven : (num -> bool) 
-			(lambda (n : (num -> bool)) 
+			(lambda (n : num) 
 				(if (= 0 n) #t  (isOdd  (- n 1)))
 			)
 		)
-		(isOdd  : (int -> boolean) 
-			(lambda (n : (int -> boolean)) 
+		(isOdd  : (num -> bool) 
+			(lambda (n : num) 
 				(if (= 0 n) #f  (isEven (- n 1)))
 			)
 		)
