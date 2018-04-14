@@ -42,7 +42,7 @@ public class Checker implements Visitor<Type, Env<Type>> {
 	    return env.get(e.name());
 	} catch (Exception ex) {
 	    return new ErrorT("Variable " + e.name()
-		    + " has not been declared in " + ts.visit(e, null));
+	    + " has not been declared in " + ts.visit(e, null));
 	}
     }
 
@@ -89,7 +89,7 @@ public class Checker implements Visitor<Type, Env<Type>> {
 
 	String message = "The declared type of a lambda expression should be "
 		+ "of function type in ";
-	
+
 	//FuncT ft = (FuncT) type;
 	message = "The number of formal parameters and the number of "
 		+ "arguments in the function type do not match in ";
@@ -321,7 +321,7 @@ public class Checker implements Visitor<Type, Env<Type>> {
 	}
 
 	return new ErrorT("The Ref expression expects type " + type.tostring()
-		+ " found " + expType.tostring() + " in " + ts.visit(e, null));
+	+ " found " + expType.tostring() + " in " + ts.visit(e, null));
     }
 
     public Type visit(DerefExp e, Env<Type> env) {
@@ -471,7 +471,7 @@ public class Checker implements Visitor<Type, Env<Type>> {
 
 	for (Exp exp : operands) {
 	    Type intermediate = (Type) exp.accept(this, env); // Static
-							      // type-checking
+	    // type-checking
 	    if (intermediate instanceof ErrorT) {
 		return intermediate;
 	    }

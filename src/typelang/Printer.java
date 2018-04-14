@@ -5,17 +5,17 @@ import java.util.List;
 import typelang.AST.Exp;
 
 public class Printer {
-    
+
     public void print(Value v) {
-	if(v.tostring() != "")
+	if (v.tostring() != "")
 	    System.out.println(v.tostring());
     }
-    
+
     public void print(Type t) {
-	if(t.tostring() != "")
+	if (t.tostring() != "")
 	    System.out.println(t.tostring());
     }
-    
+
     public void print(Exception e) {
 	System.out.println(e.toString());
     }
@@ -24,7 +24,7 @@ public class Printer {
 
 	public String visit(AST.AddExp e, Env<Void> env) {
 	    String result = "(+ ";
-	    for(AST.Exp exp : e.all()) 
+	    for (AST.Exp exp : e.all())
 		result += exp.accept(this, env) + " ";
 	    return result + ")";
 	}
@@ -42,13 +42,14 @@ public class Printer {
 	}
 
 	public String visit(AST.BoolExp e, Env<Void> env) {
-	    if(e.v()) return "#t";
+	    if (e.v())
+		return "#t";
 	    return "#f";
 	}
 
 	public String visit(AST.DivExp e, Env<Void> env) {
 	    String result = "(/ ";
-	    for(AST.Exp exp : e.all()) 
+	    for (AST.Exp exp : e.all())
 		result += exp.accept(this, env) + " ";
 	    return result + ")";
 	}
@@ -67,7 +68,7 @@ public class Printer {
 
 	public String visit(AST.MultExp e, Env<Void> env) {
 	    String result = "(* ";
-	    for(AST.Exp exp : e.all()) 
+	    for (AST.Exp exp : e.all())
 		result += exp.accept(this, env) + " ";
 	    return result + ")";
 	}
@@ -78,7 +79,7 @@ public class Printer {
 
 	public String visit(AST.SubExp e, Env<Void> env) {
 	    String result = "(- ";
-	    for(AST.Exp exp : e.all()) 
+	    for (AST.Exp exp : e.all())
 		result += exp.accept(this, env) + " ";
 	    return result + ")";
 	}
@@ -92,7 +93,7 @@ public class Printer {
 	    List<String> names = e.names();
 	    List<Exp> value_exps = e.value_exps();
 	    int num_decls = names.size();
-	    for (int i = 0; i < num_decls ; i++) {
+	    for (int i = 0; i < num_decls; i++) {
 		result += " (";
 		result += names.get(i) + " ";
 		result += value_exps.get(i).accept(this, env) + ")";
@@ -111,7 +112,7 @@ public class Printer {
 
 	public String visit(AST.LambdaExp e, Env<Void> env) {
 	    String result = "(lambda ( ";
-	    for(String formal : e.formals()) 
+	    for (String formal : e.formals())
 		result += formal + " ";
 	    result += ") ";
 	    result += e.body().accept(this, env);
@@ -121,7 +122,7 @@ public class Printer {
 	public String visit(AST.CallExp e, Env<Void> env) {
 	    String result = "(";
 	    result += e.operator().accept(this, env) + " ";
-	    for(AST.Exp exp : e.operands())
+	    for (AST.Exp exp : e.operands())
 		result += exp.accept(this, env) + " ";
 	    return result + ")";
 	}
@@ -176,7 +177,7 @@ public class Printer {
 
 	public String visit(AST.ListExp e, Env<Void> env) {
 	    String result = "(list ";
-	    for(AST.Exp exp : e.elems())
+	    for (AST.Exp exp : e.elems())
 		result += exp.accept(this, env) + " ";
 	    return result + ")";
 	}
@@ -192,7 +193,7 @@ public class Printer {
 	    List<String> names = e.names();
 	    List<Exp> fun_exps = e.fun_exps();
 	    int num_decls = names.size();
-	    for (int i = 0; i < num_decls ; i++) {
+	    for (int i = 0; i < num_decls; i++) {
 		result += " (";
 		result += names.get(i) + " ";
 		result += fun_exps.get(i).accept(this, env) + ")";
