@@ -15,7 +15,7 @@ public class Interpreter {
     public static void main(String[] args) {
 	System.out.println(
 		"TypeLang: Type a program to evaluate and press the enter key,\n"
-			+ "e.g. ((lambda (x y z : (num num num -> num)) (+ x (+ y z))) 1 2 3) \n"
+			+ "e.g. ((lambda (x: num y: num z : num) (+ x (+ y z))) 1 2 3) \n"
 			+ "or try (let ((x : num 2)) x) \n"
 			+ "or try (car (list : num  1 2 8)) \n"
 			+ "or try (ref : num 2) \n"
