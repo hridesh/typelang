@@ -119,7 +119,7 @@ unittype returns [UnitT ty] :
  letrecexp returns [LetrecExp ast] 
         locals [ArrayList<String> ids = new ArrayList<String>(), ArrayList<Type> types = new ArrayList<Type>(), ArrayList<Exp> funs = new ArrayList<Exp>(); ] :
  		'(' Letrec 
- 			'(' ( '(' id=Identifier ':' ty1=type fun=exp ')' { $ids.add($id.text); $funs.add($fun.ast); } )+  ')'
+ 			'(' ( '(' id=Identifier ':' ty1=type fun=exp ')' { $ids.add($id.text); $types.add($ty1.ty); $funs.add($fun.ast); } )+  ')'
  			body=exp 
  		')' { $ast = new LetrecExp($ids, $types, $funs, $body.ast); }
  		;
