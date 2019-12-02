@@ -26,5 +26,32 @@
 
 	<target name="parser" depends="typelang" >
 	</target>
+
+        <target name="compile" depends="parser">
+                <mkdir dir="build/classes"/>
+                <javac srcdir="src" destdir="build/classes">
+                        <classpath>
+                                <pathelement path="lib/antlr-4.5-complete.jar"/>
+                        </classpath>
+                </javac>
+        </target>
+
+        <target name="jar" depends="compile">
+                <mkdir dir="build/jar"/>
+                <jar destfile="build/jar/TypeLang.jar" basedir="build/classes">
+                        <zipgroupfileset dir="lib" includes="antlr-4.5-complete.jar" />
+                        <manifest>
+                                <attribute name="Main-Class" value="typelang.Interpreter"/>
+                        </manifest>
+                </jar>
+        </target>
+
+        <target name="run" depends="jar">
+                <java jar="build/jar/TypeLang.jar" fork="true"/>
+        </target>
+
+        <target name="clean">
+                <delete dir="build"/>
+        </target>
 	
 </project>
