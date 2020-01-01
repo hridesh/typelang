@@ -26,23 +26,23 @@ grammar TypeLang;
 		| num=numexp { $ast = $num.ast; }
 		| str=strexp { $ast = $str.ast; }
 		| bl=boolexp { $ast = $bl.ast; }
-	    	| add=addexp { $ast = $add.ast; }
-	    	| sub=subexp { $ast = $sub.ast; }
-	    	| mul=multexp { $ast = $mul.ast; }
-	    	| div=divexp { $ast = $div.ast; }
-	    	| let=letexp { $ast = $let.ast; }
-	    	| lam=lambdaexp { $ast = $lam.ast; }
-	    	| call=callexp { $ast = $call.ast; }
-	    	| i=ifexp { $ast = $i.ast; }
-	    	| less=lessexp { $ast = $less.ast; }
-	    	| eq=equalexp { $ast = $eq.ast; }
-	    	| gt=greaterexp { $ast = $gt.ast; }
-	    	| car=carexp { $ast = $car.ast; }
-	    	| cdr=cdrexp { $ast = $cdr.ast; }
-	    	| cons=consexp { $ast = $cons.ast; }
-	    	| list=listexp { $ast = $list.ast; }
-	    	| nl=nullexp { $ast = $nl.ast; }
-	    	| lrec=letrecexp { $ast = $lrec.ast; }
+    	| add=addexp { $ast = $add.ast; }
+    	| sub=subexp { $ast = $sub.ast; }
+    	| mul=multexp { $ast = $mul.ast; }
+    	| div=divexp { $ast = $div.ast; }
+    	| let=letexp { $ast = $let.ast; }
+    	| lam=lambdaexp { $ast = $lam.ast; }
+    	| call=callexp { $ast = $call.ast; }
+    	| i=ifexp { $ast = $i.ast; }
+    	| less=lessexp { $ast = $less.ast; }
+    	| eq=equalexp { $ast = $eq.ast; }
+    	| gt=greaterexp { $ast = $gt.ast; }
+    	| car=carexp { $ast = $car.ast; }
+    	| cdr=cdrexp { $ast = $cdr.ast; }
+    	| cons=consexp { $ast = $cons.ast; }
+    	| list=listexp { $ast = $list.ast; }
+    	| nl=nullexp { $ast = $nl.ast; }
+    	| lrec=letrecexp { $ast = $lrec.ast; }
         | np=isnumberexp { $ast = $np.ast; }
         | bp=isbooleanexp { $ast = $bp.ast; }
         | sp=isstringexp { $ast = $sp.ast; }
@@ -50,11 +50,11 @@ grammar TypeLang;
         | lp=islistexp { $ast = $lp.ast; }
         | pap=ispairexp { $ast = $pap.ast; }
         | up=isunitexp { $ast = $up.ast; }  
-	    	| ref=refexp { $ast = $ref.ast; }  
-	    	| deref=derefexp { $ast = $deref.ast; }
-	    	| assign=assignexp { $ast = $assign.ast; }
-	    	| free=freeexp { $ast = $free.ast; }
-	    	;
+    	| ref=refexp { $ast = $ref.ast; }  
+    	| deref=derefexp { $ast = $deref.ast; }
+    	| assign=assignexp { $ast = $assign.ast; }
+    	| free=freeexp { $ast = $free.ast; }
+    	;
  
  // ******************* Type Expressions for TypeLang **********************
 type returns [Type ty]: 
