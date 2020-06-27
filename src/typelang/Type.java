@@ -134,6 +134,10 @@ public interface Type {
 				ListT lt = (ListT) other;
 
 				return _fst.typeEqual(lt._fst);
+			} else if (other instanceof PairT) {
+				PairT pt = (PairT) other;
+				
+				return _fst.typeEqual(pt._fst) && _snd.typeEqual(pt._snd);
 			}
 			return false;
 		}
