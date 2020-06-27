@@ -81,7 +81,8 @@ public class Checker implements Visitor<Type, Env<Type>> {
 	}
 
 	public Type visit(DefineDecl d, Env<Type> env) {
-		return (Type) d._value_exp.accept(this, env);
+		Env<Type> new_env = new ExtendEnv<Type>(env, d._name, d._type);
+		return (Type) d._value_exp.accept(this, new_env);
 	}
 
 	public Type visit(LambdaExp e, Env<Type> env) {
