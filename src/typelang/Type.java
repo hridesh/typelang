@@ -63,7 +63,7 @@ public interface Type {
 		}
 
 		public String tostring() {
-			return "String";
+			return "string";
 		}
 
 		public boolean typeEqual(Type other) {

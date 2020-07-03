@@ -378,7 +378,7 @@ unittype returns [UnitT ty] :
  Bool : 'bool' ;
  ListT : 'List' ;
  RefT : 'Ref' ;
- StringT : 'String' ;
+ StringT : 'string' ;
  UnitT : 'unit' ;
  
  Number : DIGIT+ ;
